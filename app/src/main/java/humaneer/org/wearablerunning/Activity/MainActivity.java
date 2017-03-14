@@ -15,13 +15,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import humaneer.org.wearablerunning.DBHelper;
 import humaneer.org.wearablerunning.Fragment.DataFragment;
 import humaneer.org.wearablerunning.Fragment.FriendFragment;
 import humaneer.org.wearablerunning.Fragment.MainFragment;
 import humaneer.org.wearablerunning.R;
+import humaneer.org.wearablerunning.Service.ServiceGPS;
+import humaneer.org.wearablerunning.Service.ServiceTimer;
 import humaneer.org.wearablerunning.SlidingTabLayout;
 import humaneer.org.wearablerunning.BLE.BlunoLibrary;
 
@@ -220,8 +221,35 @@ public class MainActivity extends BlunoLibrary {
 
     @Override
     public void onSerialReceived(String theString) {							//Once connection data received, this function will be called
-        // TODO Auto-generated method stub
-        Toast.makeText(getApplicationContext(), theString, Toast.LENGTH_SHORT).show();
-        button.setText(theString);
+        // Data received
+
+        //TODO: r 신호 받았을 때, 현재 뛴 거리를 확인하고 더뛰어야하는지 그만 뛰어야하는지 알림
+
+        if(ServiceTimer.getTimerCount() < 3000) {
+            serialSend(makeData(1500 - (int)ServiceGPS.getDistance(), MODE_MORE));
+        } else {
+            serialSend(makeData(0, MODE_STOP));
+        }
+
+    }
+
+    private final int MODE_MORE = 0;
+    private final int MODE_STOP = 1;
+    private final int MODE_SLOWER = 2;
+    private final int MODE_FASTER = 3;
+    public String makeData(int data, int mode) {
+        switch (mode) {
+            case MODE_MORE:
+                return "a" + data + "q";
+            case MODE_STOP:
+                return "c" + data + "q";
+            case MODE_SLOWER:
+                return "b" + data + "q";
+            case MODE_FASTER:
+                return "d" + data + "q";
+            default:
+                return "f";
+        }
+
     }
 }

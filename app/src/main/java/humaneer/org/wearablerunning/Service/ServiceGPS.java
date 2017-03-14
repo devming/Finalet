@@ -34,10 +34,6 @@ public class ServiceGPS extends Service {
     static double prevVelocity = 0.0;
 
     GPSListener gpsListener;
-    PolylineOptions polylineOptions = new PolylineOptions().geodesic(true);
-
-
-//    private static GoogleMap googleMap;
 
     ArrayList<LatLng> listLatLng;
     public static boolean IsServiceRunning = false;
@@ -68,9 +64,6 @@ public class ServiceGPS extends Service {
 
     protected LocationManager locationManager;
 
-//    public static GoogleMap getGoogleMap() {
-//        return googleMap;
-//    }
 
     public static double getDistance() {
         return distance;
