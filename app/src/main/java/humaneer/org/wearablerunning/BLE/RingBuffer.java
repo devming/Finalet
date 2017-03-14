@@ -1,4 +1,4 @@
-package humaneer.org.wearablerunning._Deprecated.Test;
+package humaneer.org.wearablerunning.BLE;
 
 /**
  * Created by Minki on 2017-03-14.

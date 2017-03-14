@@ -1,4 +1,4 @@
-package humaneer.org.wearablerunning._Deprecated.Test;
+package humaneer.org.wearablerunning.BLE;
 
 /**
  * Created by Minki on 2017-03-14.
@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +36,7 @@ import android.widget.Toast;
 
 import humaneer.org.wearablerunning.R;
 
-public abstract  class BlunoLibrary  extends Activity{
+public abstract class BlunoLibrary extends AppCompatActivity {
 
     private Context mainContext=this;
 
@@ -346,7 +347,7 @@ public abstract  class BlunoLibrary  extends Activity{
         }
     };
 
-    void buttonScanOnClickProcess()
+    public void buttonScanOnClickProcess()
     {
         switch (mConnectionState) {
             case isNull:
