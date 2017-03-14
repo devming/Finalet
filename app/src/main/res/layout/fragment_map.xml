@@ -1,0 +1,52 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="humaneer.org.wearablerunning._Deprecated.MapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="vertical"-->
+        <!--android:weightSum="5">-->
+        <fragment
+            android:id="@+id/mapFragment"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal"
+            android:layout_weight="5"/>
+        <!--<android.support.constraint.ConstraintLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:layout_weight="1">-->
+
+            <!--<TextView-->
+                <!--android:id="@+id/textview_distance"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="@string/distance"-->
+                <!--map:layout_constraintTop_toTopOf="parent"-->
+                <!--android:layout_marginLeft="16dp"-->
+                <!--map:layout_constraintBottom_toBottomOf="parent"-->
+                <!--map:layout_constraintLeft_toLeftOf="parent" />-->
+
+            <!--<TextView-->
+                <!--android:id="@+id/textviewTimer"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="00:00:00"-->
+                <!--map:layout_constraintTop_toTopOf="parent"-->
+                <!--map:layout_constraintBottom_toBottomOf="parent"-->
+                <!--map:layout_constraintVertical_bias="0.5"-->
+                <!--android:layout_marginRight="8dp"-->
+                <!--map:layout_constraintRight_toRightOf="parent" />-->
+
+
+        <!--</android.support.constraint.ConstraintLayout>-->
+    <!--</LinearLayout>-->
+</FrameLayout>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="E:\workspace\android_studio\BlueCaptureLed\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="E:\workspace\android_studio\BlueCaptureLed\app\build\intermediates\pre-dexed\debug\classes-0b08317911a7c89feb73ab92e1eabceaa63aaf34.jar" />
+    </item>
+    <item
+        jar="E:\utils\android\android_studio_sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.3\support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="E:\workspace\android_studio\BlueCaptureLed\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-2ee2ac0392c46ba5d3bd2724c50b4c1cda540ada.jar" />
+    </item>
+    <item
+        jar="E:\workspace\android_studio\BlueCaptureLed\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\jars\libs\internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="E:\workspace\android_studio\BlueCaptureLed\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-adc96a93c92e51e8ee17c61e6948ade4cf4fcc01.jar" />
+    </item>
+    <item
+        jar="E:\workspace\android_studio\BlueCaptureLed\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="E:\workspace\android_studio\BlueCaptureLed\app\build\intermediates\pre-dexed\debug\classes-33275d95fb7f3eb56273aa2919889c9479289a2f.jar" />
+    </item>
+
+</items>

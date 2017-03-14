@@ -1,0 +1,38 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.0'
+
+    }
+}
+apply plugin: 'android'
+
+repositories {
+    mavenCentral()
+}
+
+android {
+    //compileSdkVersion 19
+    //buildToolsVersion "19.0.1"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
+    useLibrary 'org.apache.http.legacy'  //구버전 Library 추가.[1]
+
+    defaultConfig {
+        //minSdkVersion 19
+        //targetSdkVersion 19
+        applicationId "com.ysnet.android.ex_complexview"
+        //minSdkVersion 10
+        minSdkVersion 18
+        //targetSdkVersion 23   // 23도 가능한 방법 찾을것.2016.10.28.
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+dependencies {
+    provided 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'  // [1] 관련 추가 .
+}
