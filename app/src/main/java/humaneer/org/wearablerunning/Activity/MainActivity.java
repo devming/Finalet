@@ -95,30 +95,6 @@ public class MainActivity extends BlunoLibrary {
 
                 serialSend(serialSendText.getText().toString());				//send the data to the BLUNO
 
-//                if (mGattCharacteristics != null) {
-//                    final BluetoothGattCharacteristic characteristic =
-//                            mGattCharacteristics.get(3).get(0);
-//                    final int charaProp = characteristic.getProperties();
-//                    if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
-//                        // If there is an active notification on a characteristic, clear
-//                        // it first so it doesn't update the data field on the user interface.
-//                        if (mNotifyCharacteristic != null) {
-//                            Log.d("### Main", "mNotifyCharacteristic");
-//                            mBluetoothLeService.setCharacteristicNotification(
-//                                    mNotifyCharacteristic, false);
-//                            mNotifyCharacteristic = null;
-//                        }
-//                        String data = "a1000";
-//                        characteristic.setValue(data);  // data setting! - commented by devming
-//
-//                        mBluetoothLeService.readCharacteristic(characteristic);
-//                    }
-//                    if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-//                        Log.d("### Main", "characteristic");
-//                        mNotifyCharacteristic = characteristic;
-//                        mBluetoothLeService.setCharacteristicNotification(characteristic, true);
-//                    }
-//                }
             }
         });
     }
@@ -246,5 +222,6 @@ public class MainActivity extends BlunoLibrary {
     public void onSerialReceived(String theString) {							//Once connection data received, this function will be called
         // TODO Auto-generated method stub
         Toast.makeText(getApplicationContext(), theString, Toast.LENGTH_SHORT).show();
+        button.setText(theString);
     }
 }

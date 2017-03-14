@@ -336,7 +336,7 @@ public abstract class BlunoLibrary extends AppCompatActivity {
                 }
 
 
-                System.out.println("displayData "+intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+                Log.d("###TTG", "displayData "+intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
 
 //            	mPlainProtocol.mReceivedframe.append(intent.getStringExtra(BluetoothLeService.EXTRA_DATA)) ;
 //            	System.out.print("mPlainProtocol.mReceivedframe:");

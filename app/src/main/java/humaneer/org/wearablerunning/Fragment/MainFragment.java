@@ -80,19 +80,19 @@ public class MainFragment extends Fragment {
                 // # 추후
                 // 3. 각종 애니메이션 추가
 
-                Toast.makeText(getActivity(), "Start Clicked", Toast.LENGTH_SHORT).show();
                 Log.d("### Start Clicked ###", "Start Clicked" );
                 // Test Logic
                 PermissionListener permissionListener = new PermissionListener() {
                     @Override
                     public void onPermissionGranted() {
-                        Toast.makeText(getActivity(), "Permission Granted", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), "Permission Granted", Toast.LENGTH_SHORT).show();
+                        StartButtonClickedEventHandler();
                     }
 
                     @Override
                     public void onPermissionDenied(ArrayList<String> arrayList) {
 
-                        Toast.makeText(getActivity(), "Permission Denied", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), "Permission Denied", Toast.LENGTH_SHORT).show();
                     }
                 };
 
@@ -101,9 +101,6 @@ public class MainFragment extends Fragment {
                         .setDeniedMessage("GPS를 동작시키세요.")
                         .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                         .check();
-
-                StartButtonClickedEventHandler();
-
             }
         });
 
@@ -251,28 +248,28 @@ public class MainFragment extends Fragment {
 //                    Toast.makeText(getActivity(), "GPS를 동작시키세요.", Toast.LENGTH_SHORT).show();
 //                    return;
 //                }
-
-
+//
+//
 //            if(timerIntent == null) {
 ////                    timerIntent = new Intent(TIMER_TAG);
 //
 //                timerIntent = new Intent(getContext(), ServiceTimer.class);
 //            }
-
-
+//
+//
 //                    ServiceTimerInstance.startService(timerIntent);
 //                    ServiceTimerInstance.setTimer(getApplicationContext());
-
+//
 //                Thread timerThread = new Thread(ServiceTimerInstance);
 //                timerThread.start();
-
-
+//
+//
 //            if(gpsIntent == null){
 ////                    gpsIntent = new Intent(GPS_TAG);
 //
 //                gpsIntent = new Intent(getContext(), ServiceGPS.class);
 //            }
-
+//
 //            Intent timerServiceIntent = new Intent(getActivity(), ServiceTimer.class);
 //            getContext().bindService(timerServiceIntent, mTimerServiceConnection, BIND_AUTO_CREATE);
 
