@@ -2,13 +2,15 @@ package humaneer.org.wearablerunning.Fragment;
 
 
 import android.Manifest;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,22 +24,33 @@ import com.gun0912.tedpermission.TedPermission;
 
 import java.util.ArrayList;
 
+import humaneer.org.wearablerunning.Activity.MainActivity;
 import humaneer.org.wearablerunning.BroadcastReceiver.FinishRunning;
 import humaneer.org.wearablerunning.R;
 import humaneer.org.wearablerunning.Service.ServiceGPS;
 import humaneer.org.wearablerunning.Service.ServiceTimer;
 
-import static android.content.Context.BIND_AUTO_CREATE;
-
 
 public class MainFragment extends Fragment {
 
-
+    private final static String TAG = MainFragment.class.getSimpleName();
     private final String GPS_TAG = "humaneer.org.wearablerunning.Services.GPS";
 
-    Intent gpsServiceIntent = null;
+//    private Intent gpsServiceIntent = null;
+
+    /**
+     * Widget variables
+     */
+    ImageButton buttonRunning;
+    RelativeLayout mRelativeLayout;
+
 
     public MainFragment() {
+    }
+
+    MainActivity mMainActivity;
+    public void setMainActivity(MainActivity mainActivity) {
+        mMainActivity = mainActivity;
     }
 
     /**
@@ -52,12 +65,6 @@ public class MainFragment extends Fragment {
         return fragment;
     }
 
-    /**
-     * Data variables
-     */
-
-    ImageButton buttonRunning;
-    RelativeLayout mRelativeLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,26 +88,28 @@ public class MainFragment extends Fragment {
                 // 3. 각종 애니메이션 추가
 
                 Log.d("### Start Clicked ###", "Start Clicked" );
+
+                startButtonClickedEventHandler();
                 // Test Logic
-                PermissionListener permissionListener = new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted() {
-//                        Toast.makeText(getActivity(), "Permission Granted", Toast.LENGTH_SHORT).show();
-                        StartButtonClickedEventHandler();
-                    }
-
-                    @Override
-                    public void onPermissionDenied(ArrayList<String> arrayList) {
-
-//                        Toast.makeText(getActivity(), "Permission Denied", Toast.LENGTH_SHORT).show();
-                    }
-                };
-
-                new TedPermission(getActivity())
-                        .setPermissionListener(permissionListener)
-                        .setDeniedMessage("GPS를 동작시키세요.")
-                        .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-                        .check();
+//                PermissionListener permissionListener = new PermissionListener() {
+//                    @Override
+//                    public void onPermissionGranted() {
+////                        Toast.makeText(getActivity(), "Permission Granted", Toast.LENGTH_SHORT).show();
+//                        startButtonClickedEventHandler();
+//                    }
+//
+//                    @Override
+//                    public void onPermissionDenied(ArrayList<String> arrayList) {
+//
+////                        Toast.makeText(getActivity(), "Permission Denied", Toast.LENGTH_SHORT).show();
+//                    }
+//                };
+//
+//                new TedPermission(getActivity())
+//                        .setPermissionListener(permissionListener)
+//                        .setDeniedMessage("GPS를 동작시키세요.")
+//                        .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+//                        .check();
             }
         });
 
@@ -170,10 +179,6 @@ public class MainFragment extends Fragment {
 //        }
     }
 
-    private ServiceGPS serviceGPS;
-    private ServiceTimer serviceTimer;
-
-    private final static String TAG = MainFragment.class.getSimpleName();
     // Code to manage Service lifecycle.
 //    private final ServiceConnection mGpsServiceConnection = new ServiceConnection() {
 //
@@ -215,18 +220,22 @@ public class MainFragment extends Fragment {
 //        }
 //    };
 
-    public void StartButtonClickedEventHandler () {
-        Toast.makeText(getActivity(), ServiceGPS.IsServiceRunning + "", Toast.LENGTH_SHORT).show();
-        Log.d("### servicerunning ###", ServiceGPS.IsServiceRunning + "" );
+    public void startButtonClickedEventHandler() {
+//        Toast.makeText(getActivity(), ServiceGPS.IsServiceRunning + "", Toast.LENGTH_SHORT).show();
+//        Log.d("### servicerunning ###", ServiceGPS.IsServiceRunning + "" );
 
-        if(gpsServiceIntent == null)
-            gpsServiceIntent = new Intent(getContext(), ServiceGPS.class);
+//        if(gpsServiceIntent == null)
+//            gpsServiceIntent = new Intent(getContext(), ServiceGPS.class);
 
-        if(ServiceGPS.IsServiceRunning) {   // 시작 중인 상태(STOP을 누를 경우)
-            ServiceGPS.IsServiceRunning = false;
+        MainActivity.setLocationRunning(false);
+
+        if(MainActivity.isLocationRunning()) {   // 시작 중인 상태(STOP을 누를 경우)
+//            ServiceGPS.IsServiceRunning = false;
+            mMainActivity.removeLocationManager();
+            Log.d("## FALSE", "Stop!");
 
             buttonRunning.setImageResource(R.drawable.btn_start);
-            getActivity().stopService(gpsServiceIntent);
+//            getActivity().stopService(gpsServiceIntent);
 
 //                double latitude = ServiceGpsInstance.getLatitude();
 //                double longitude = ServiceGpsInstance.getLongitude();
@@ -275,16 +284,14 @@ public class MainFragment extends Fragment {
 
 
             // GPS 서비스 실행
-            gpsServiceIntent.setPackage(GPS_TAG);
-            getActivity().startService(gpsServiceIntent);
-            getActivity().registerReceiver(new FinishRunning(), makeUpdateIntentFilter());
 
-            // Tiemr 서비스 실행
-            ServiceTimer serviceTimer = new ServiceTimer();
-            serviceTimer.setContext(getActivity());
-            serviceTimer.run();
+            startServiceGPS();
+            startServiceTimer();
 
-            ServiceGPS.IsServiceRunning = true;
+            MainActivity.setLocationRunning(true);
+
+            Log.d("## True", "Start!");
+//            ServiceGPS.IsServiceRunning = true;
             buttonRunning.setImageResource(R.drawable.btn_stop);
 
 //                    ServiceGpsInstance.startService(gpsIntent);
@@ -311,6 +318,24 @@ public class MainFragment extends Fragment {
 
         }
     }
+    public void startServiceGPS() {
+
+        mMainActivity.initLocation();
+
+//        gpsServiceIntent.setPackage(GPS_TAG);
+//        getActivity().startService(gpsServiceIntent);
+//        getActivity().registerReceiver(new FinishRunning(), makeUpdateIntentFilter());
+    }
+
+    public void startServiceTimer() {
+
+        // Tiemr 서비스 실행
+        ServiceTimer serviceTimer = new ServiceTimer();
+        serviceTimer.setContext(getActivity(), mMainActivity);
+        serviceTimer.run();
+    }
+
+
 
     public final static String ACTION_GPS_CONNECTED =
             "humaneer.org.wearablerunning.GPS_CONNECTED";

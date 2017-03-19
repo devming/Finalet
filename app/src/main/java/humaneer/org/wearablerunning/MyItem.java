@@ -5,7 +5,7 @@ package humaneer.org.wearablerunning;
  */
 import java.sql.Date;
 
-class MyItem {
+public class MyItem {
     private int _id;
     private double distance;
     private int timeSeconds;

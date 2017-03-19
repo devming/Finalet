@@ -7,12 +7,14 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import humaneer.org.wearablerunning.Activity.MainActivity;
 import humaneer.org.wearablerunning.Fragment.MainFragment;
 import humaneer.org.wearablerunning.OnTextEventListener;
 
 public class ServiceTimer extends Service implements Runnable {
 
     Context mContext;
+    MainActivity mMainActivity;
     // 타이머
 //    Timer mTimer;
 //    TimerTask task;
@@ -126,14 +128,15 @@ public class ServiceTimer extends Service implements Runnable {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public void setContext(Context context) {
+    public void setContext(Context context, MainActivity mainActivity) {
         mContext = context;
+        mMainActivity = mainActivity;
     }
 
     @Override
     public void run() {
 
-        while(ServiceGPS.IsServiceRunning) {
+        while(MainActivity.isLocationRunning()) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

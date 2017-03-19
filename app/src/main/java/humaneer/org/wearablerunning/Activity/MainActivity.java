@@ -1,10 +1,20 @@
 package humaneer.org.wearablerunning.Activity;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -15,11 +25,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import humaneer.org.wearablerunning.DBHelper;
 import humaneer.org.wearablerunning.Fragment.DataFragment;
 import humaneer.org.wearablerunning.Fragment.FriendFragment;
 import humaneer.org.wearablerunning.Fragment.MainFragment;
+import humaneer.org.wearablerunning.MyItem;
 import humaneer.org.wearablerunning.R;
 import humaneer.org.wearablerunning.Service.ServiceGPS;
 import humaneer.org.wearablerunning.Service.ServiceTimer;
@@ -28,14 +42,26 @@ import humaneer.org.wearablerunning.BLE.BlunoLibrary;
 
 public class MainActivity extends BlunoLibrary {
 
+    private boolean isFirstRunning = true;
+
     public static DBHelper dbHelper;
+    public MyItem myItem;
 
     private SlidingTabLayout mSlidingTabLayout;
     private ViewPager mViewPager;
 
+    private Button button;
+    private EditText serialSendText;
 
-    Button button;
-    EditText serialSendText;
+    private static boolean isLocationRunning = false;
+
+    public static boolean isLocationRunning() {
+        return isLocationRunning;
+    }
+
+    public static void setLocationRunning(boolean locationRunning) {
+        isLocationRunning = locationRunning;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +71,7 @@ public class MainActivity extends BlunoLibrary {
         // DB 생성.
         dbHelper = new DBHelper(getApplicationContext(), "HealthData.db", null, 1);
 
+        myItem = new MyItem();
         // 서비스 생성자 생성.
 //        ServiceTimerInstance = new ServiceTimer();
 //        ServiceGpsInstance = new ServiceGPS();
@@ -118,7 +145,9 @@ public class MainActivity extends BlunoLibrary {
                 case 0:
                     return new FriendFragment();
                 case 1:
-                    return new MainFragment();
+                    MainFragment mainFragment = new MainFragment();
+                    mainFragment.setMainActivity(MainActivity.this);
+                    return mainFragment;
                 case 2:
                     return new DataFragment();
                 default:
@@ -223,8 +252,6 @@ public class MainActivity extends BlunoLibrary {
     public void onSerialReceived(String theString) {							//Once connection data received, this function will be called
         // Data received
 
-        //TODO: r 신호 받았을 때, 현재 뛴 거리를 확인하고 더뛰어야하는지 그만 뛰어야하는지 알림
-
         if(ServiceTimer.getTimerCount() < 3000) {
             serialSend(makeData(1500 - (int)ServiceGPS.getDistance(), MODE_MORE));
         } else {
@@ -252,4 +279,79 @@ public class MainActivity extends BlunoLibrary {
         }
 
     }
+
+    /**
+     * Location variables
+     */
+    LocationManager locationManager;
+    LocationListener locationListener;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode == 1) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            }
+        }
+    }
+
+    Location curLocation;
+
+    public void initLocation() {
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.d(TAG, "## initLocation changed");
+//                Toast.makeText(getApplicationContext(), "initLocation" + location.toString(), Toast.LENGTH_SHORT).show();
+                // CODE 입력
+                curLocation = location;
+//                myItem.setDistance();
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+        if(Build.VERSION.SDK_INT < 23) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        } else {
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            } else {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                if(isFirstRunning) {
+                    curLocation = lastKnownLocation;
+                    isFirstRunning = false;
+                }
+                double distance = lastKnownLocation.distanceTo(curLocation);
+                button.setText((distance/1000)+" km");
+            }
+        }
+    }
+
+    public void removeLocationManager() {
+
+        isLocationRunning = false;
+        locationManager.removeUpdates(locationListener);
+    }
+
+
 }
