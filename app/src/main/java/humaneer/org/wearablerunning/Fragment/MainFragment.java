@@ -1,33 +1,18 @@
 package humaneer.org.wearablerunning.Fragment;
 
 
-import android.Manifest;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
-
-import com.gun0912.tedpermission.PermissionListener;
-import com.gun0912.tedpermission.TedPermission;
-
-import java.util.ArrayList;
+import android.widget.ImageView;
 
 import humaneer.org.wearablerunning.Activity.MainActivity;
-import humaneer.org.wearablerunning.BroadcastReceiver.FinishRunning;
 import humaneer.org.wearablerunning.R;
-import humaneer.org.wearablerunning.Service.ServiceGPS;
 import humaneer.org.wearablerunning.Service.ServiceTimer;
 
 
@@ -41,8 +26,8 @@ public class MainFragment extends Fragment {
     /**
      * Widget variables
      */
-    ImageButton buttonRunning;
-    RelativeLayout mRelativeLayout;
+    ImageView buttonRunning;
+    ConstraintLayout mRelativeLayout;
 
 
     public MainFragment() {
@@ -74,9 +59,9 @@ public class MainFragment extends Fragment {
         * */
         Log.d(TAG, "### MainFragment onCreateView! ###");
         View view = inflater.inflate(R.layout.fragment_main, container, true);
-        mRelativeLayout = (RelativeLayout) view.findViewById(R.id.main_layout);
+        mRelativeLayout = (ConstraintLayout) view.findViewById(R.id.main_layout);
 
-        buttonRunning = (ImageButton) view.findViewById(R.id.imagebutton_running);
+        buttonRunning = (ImageView) view.findViewById(R.id.imagebutton_running);
         buttonRunning.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

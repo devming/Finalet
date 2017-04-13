@@ -69,7 +69,7 @@ public class MainActivity extends BlunoLibrary {
         setContentView(R.layout.activity_main);
 
         // DB 생성.
-        dbHelper = new DBHelper(getApplicationContext(), "HealthData.db", null, 1);
+        dbHelper = new DBHelper(getApplicationContext());
 
         myItem = new MyItem();
         // 서비스 생성자 생성.
@@ -78,13 +78,13 @@ public class MainActivity extends BlunoLibrary {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        ImageView imageViewLogo = (ImageView) findViewById(R.id.image_logo);
-//        Bitmap bmp1 = BitmapFactory.decodeResource(getResources(), R.drawable.font_logo_top);
-//        int width=(int)(getWindowManager().getDefaultDisplay().getWidth()); // 가로 사이즈 지정
-//        int height=(int)(getWindowManager().getDefaultDisplay().getHeight() * 0.8); // 세로 사이즈 지정
-//        Bitmap resizedbitmap1=Bitmap.createScaledBitmap(bmp1, width, height, true); // 이미지 사이즈 조정
-//        imageViewLogo.setImageBitmap(resizedbitmap1); // 이미지뷰에 조정한 이미지 넣기
-        imageViewLogo.setImageResource(R.drawable.font_logo_top);
+//        ImageView imageViewLogo = (ImageView) findViewById(R.id.image_logo);
+////        Bitmap bmp1 = BitmapFactory.decodeResource(getResources(), R.drawable.font_logo_top);
+////        int width=(int)(getWindowManager().getDefaultDisplay().getWidth()); // 가로 사이즈 지정
+////        int height=(int)(getWindowManager().getDefaultDisplay().getHeight() * 0.8); // 세로 사이즈 지정
+////        Bitmap resizedbitmap1=Bitmap.createScaledBitmap(bmp1, width, height, true); // 이미지 사이즈 조정
+////        imageViewLogo.setImageBitmap(resizedbitmap1); // 이미지뷰에 조정한 이미지 넣기
+//        imageViewLogo.setImageResource(R.drawable.font_logo_top);
 
         ImageView imageViewUser = (ImageView) findViewById(R.id.image_user);
 //        Bitmap bmp2 = BitmapFactory.decodeResource(getResources(), R.drawable.profile_icon);
@@ -106,7 +106,7 @@ public class MainActivity extends BlunoLibrary {
         mSlidingTabLayout.setViewPager(mViewPager);
 
         // 초기 설정 페이지
-        mViewPager.setCurrentItem(1);
+//        mViewPager.setCurrentItem(1);
 
         onCreateProcess();														//onCreate Process by BlunoLibrary
 
@@ -143,13 +143,13 @@ public class MainActivity extends BlunoLibrary {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new FriendFragment();
-                case 1:
                     MainFragment mainFragment = new MainFragment();
                     mainFragment.setMainActivity(MainActivity.this);
                     return mainFragment;
-                case 2:
+                case 1:
                     return new DataFragment();
+//                case 2:
+//                    return new FriendFragment();
                 default:
                     return null;
             }
@@ -162,7 +162,7 @@ public class MainActivity extends BlunoLibrary {
             // First : Friend Page
             // Second : Main Page.
             // Third : Data Page.
-            return 3;
+            return 2;
         }
 
     }

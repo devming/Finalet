@@ -205,14 +205,14 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
             switch (i) {
                 case 0:
-                    tabView.setBackgroundResource(R.drawable.tab_bottom_friend);
-                    break;
-                case 1:
                     tabView.setBackgroundResource(R.drawable.tab_bottom_main);
                     break;
-                case 2:
+                case 1:
                     tabView.setBackgroundResource(R.drawable.tab_bottom_data);
                     break;
+//                case 2:
+//                    tabView.setBackgroundResource(R.drawable.tab_bottom_data);
+//                    break;
             }
 
             if (tabTitleView == null && TextView.class.isInstance(tabView)) {

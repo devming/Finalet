@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -6,59 +6,80 @@
     tools:context="humaneer.org.wearablerunning.Fragment.MainFragment"
     tools:layout_editor_absoluteY="81dp"
     tools:layout_editor_absoluteX="0dp"
-    android:id="@+id/main_layout"
-    android:background="@drawable/main_track_screen"
-    >
+    android:id="@+id/main_layout">
 
+
+
+    <!--<ImageView-->
+    <!--android:id="@+id/imagebutton_running"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:elevation="0dp"-->
+    <!--android:background="#00000000"-->
+    <!--android:adjustViewBounds="false"-->
+    <!--app:srcCompat="@drawable/btn_start"-->
+    <!--android:layout_marginEnd="44dp"-->
+    <!--android:layout_marginTop="62dp"-->
+    <!--android:layout_alignTop="@+id/imageView"-->
+    <!--android:layout_alignParentEnd="true" />-->
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imagebutton_running"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/time_bubble"
+        android:layout_height="200dp"
+        app:srcCompat="@drawable/btn_start"
         android:elevation="0dp"
-        android:layout_marginStart="66dp"
-        android:layout_below="@+id/textview_aim"
-        android:layout_toEndOf="@+id/textview_aim" />
+        android:layout_marginLeft="16dp"
+        android:textColor="#999999"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="45dp"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textview_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_weight="1"
         android:fontFamily="monospace"
         android:gravity="center"
         android:text="00:00"
-        android:textColor="#005f79"
+        android:textColor="#000000"
         android:textSize="40dp"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="51dp"
-        android:layout_alignTop="@+id/imageView"
-        android:layout_alignStart="@+id/imageView" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="15dp"
+        app:layout_constraintTop_toBottomOf="@+id/imagebutton_running" />
+
+    <TextView
+        android:id="@+id/textView_speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="132dp"
+        android:fontFamily="monospace"
+        android:text="0 km/h"
+        android:textColor="#999999"
+        android:textSize="30sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/textview_time" />
 
     <TextView
         android:id="@+id/textview_aim"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="132dp"
         android:fontFamily="monospace"
-        android:text="0"
-        android:textColor="#4bccee"
+        android:text="0 %"
+        android:textColor="#999999"
         android:textSize="30sp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/textView_speed"
+        app:layout_constraintVertical_bias="0.106" />
 
-    <ImageButton
-        android:id="@+id/imagebutton_running"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:elevation="0dp"
-        android:background="#00000000"
-        app:srcCompat="@drawable/btn_start"
-        android:layout_marginEnd="44dp"
-        android:layout_marginTop="62dp"
-        android:layout_alignTop="@+id/imageView"
-        android:layout_alignParentEnd="true" />
-
-
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

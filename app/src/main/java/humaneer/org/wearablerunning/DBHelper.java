@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.sql.Date;
 
-/**
+/**https://github.com/hmkcode/Android/blob/master/android-sqlite/src/com/hmkcode/android/sqlite/MySQLiteHelper.java
  * Created by Minki on 2017-03-07.
  */
 
@@ -19,9 +19,12 @@ public class DBHelper extends SQLiteOpenHelper {
     public static double SPEED;
     public static Date DATE;
 
+    private static final String DB_NAME = "FinaletDB";
+    private static final int DB_VERSION = 1;
+
     // DBHelper 생성자로 관리할 DB 이름과 버전 정보를 받음
-    public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+    public DBHelper(Context context) {
+        super(context, DB_NAME, null, DB_VERSION);
     }
 
     // DB를 새로 생성할 때 호출되는 함수
