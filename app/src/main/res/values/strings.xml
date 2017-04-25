@@ -25,4 +25,13 @@
     <string name="menu_connect">Connect</string>
     <string name="menu_disconnect">Disconnect</string>
 
+    <string name="DATA">DATA</string>
+    <string name="MON">MON</string>
+    <string name="TUE">TUE</string>
+    <string name="WED">WED</string>
+    <string name="THU">THU</string>
+    <string name="FRI">FRI</string>
+    <string name="SAT">SAT</string>
+    <string name="SUN">SUN</string>
+
 </resources>

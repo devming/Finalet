@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import humaneer.org.wearablerunning.MyItem;
 import humaneer.org.wearablerunning.R;
 
 public class DataFragment extends Fragment {
@@ -53,12 +65,40 @@ public class DataFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.fragment_data, container, false);
+        ConstraintLayout view = (ConstraintLayout) inflater.inflate(R.layout.fragment_data, container, false);
+
+        MyItem myItem = new MyItem();
+//        String dateWeek = myItem.
 
 
-        textviewDistance = (TextView) view.findViewById(R.id.textview_distance);
-        textviewTime = (TextView) view.findViewById(R.id.textview_time);
-        textviewAvgSpeed = (TextView) view.findViewById(R.id.textview_speed);
+        float []dataObjects = new float[3];
+        dataObjects[0] = 1.5f;
+        dataObjects[1] = 3.3f;
+        dataObjects[2] = 2.6f;
+
+
+        List<Entry> entries = new ArrayList<Entry>();
+        for(float data : dataObjects) {
+            entries.add(new Entry(data, data));
+        }
+
+        LineChart chart = (LineChart) view.findViewById(R.id.dataChart);
+
+        LineDataSet dataSetGoal = new LineDataSet(entries, "Goal");
+        dataSetGoal.setColor(R.color.colorAccent);
+        dataSetGoal.setValueTextColor(R.color.colorAccent);
+        LineDataSet dataSetCurrent = new LineDataSet(entries, "My Status");
+        dataSetCurrent.setColor(R.color.colorPrimary);
+        dataSetCurrent.setValueTextColor(R.color.colorPrimary);
+
+
+        LineData lineData = new LineData(dataSetCurrent);
+        chart.setData(lineData);
+        chart.invalidate();
+
+//        textviewDistance = (TextView) view.findViewById(R.id.textview_distance);
+//        textviewTime = (TextView) view.findViewById(R.id.textview_time);
+//        textviewAvgSpeed = (TextView) view.findViewById(R.id.textview_speed);
 
         return view;
     }

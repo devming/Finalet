@@ -29,6 +29,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.TimerTask;
+
 import humaneer.org.wearablerunning.DBHelper;
 import humaneer.org.wearablerunning.Fragment.DataFragment;
 import humaneer.org.wearablerunning.Fragment.FriendFragment;
@@ -44,8 +46,8 @@ public class MainActivity extends BlunoLibrary {
 
     private boolean isFirstRunning = true;
 
-    public static DBHelper dbHelper;
-    public MyItem myItem;
+//    public static DBHelper dbHelper;
+//    public MyItem myItem;
 
     private SlidingTabLayout mSlidingTabLayout;
     private ViewPager mViewPager;
@@ -69,9 +71,9 @@ public class MainActivity extends BlunoLibrary {
         setContentView(R.layout.activity_main);
 
         // DB 생성.
-        dbHelper = new DBHelper(getApplicationContext());
+//        dbHelper = new DBHelper(getApplicationContext());
 
-        myItem = new MyItem();
+//        myItem = new MyItem();
         // 서비스 생성자 생성.
 //        ServiceTimerInstance = new ServiceTimer();
 //        ServiceGpsInstance = new ServiceGPS();
@@ -353,5 +355,32 @@ public class MainActivity extends BlunoLibrary {
         locationManager.removeUpdates(locationListener);
     }
 
+
+//    boolean exitFlag = false;
+//    @Override
+//    public void onBackPressed() {
+//
+//        if(exitFlag) {
+//            exitFlag = false;
+//            super.onBackPressed();
+//            finish();
+//        }else {
+//            TimerTask timerTask = new TimerTask() {
+//                @Override
+//                public void run() {
+//                    Toast.makeText(getApplicationContext(), "다시 한 번 뒤로가기를 누르시면 앱이 종료됩니다.", Toast.LENGTH_LONG).show();
+//
+//                    exitFlag = true;
+//                    try {
+//                        Thread.sleep(3000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    exitFlag = false;
+//                }
+//            };
+//            timerTask.run();
+//        }
+//    }
 
 }

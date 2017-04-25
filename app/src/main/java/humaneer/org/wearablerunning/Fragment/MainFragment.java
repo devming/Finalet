@@ -1,6 +1,7 @@
 package humaneer.org.wearablerunning.Fragment;
 
 
+import android.content.Context;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import humaneer.org.wearablerunning.Activity.MainActivity;
@@ -28,7 +31,6 @@ public class MainFragment extends Fragment {
      */
     ImageView buttonRunning;
     ConstraintLayout mRelativeLayout;
-
 
     public MainFragment() {
     }
@@ -212,6 +214,7 @@ public class MainFragment extends Fragment {
 //        if(gpsServiceIntent == null)
 //            gpsServiceIntent = new Intent(getContext(), ServiceGPS.class);
 
+        Animation anim = AnimationUtils.loadAnimation(mMainActivity, R.anim.toalpha1);
         MainActivity.setLocationRunning(false);
 
         if(MainActivity.isLocationRunning()) {   // 시작 중인 상태(STOP을 누를 경우)
@@ -266,6 +269,10 @@ public class MainFragment extends Fragment {
 //
 //            Intent timerServiceIntent = new Intent(getActivity(), ServiceTimer.class);
 //            getContext().bindService(timerServiceIntent, mTimerServiceConnection, BIND_AUTO_CREATE);
+
+
+            // button 애니메이션 실행
+            buttonRunning.startAnimation(anim);
 
 
             // GPS 서비스 실행
