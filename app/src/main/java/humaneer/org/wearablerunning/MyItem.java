@@ -51,8 +51,12 @@ public class MyItem {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(String date) {  // yyyy-MM-dd EEE
         this.date = date;
+    }
+
+    public String getDayOfWeek() {
+        return date.split(" ")[1];
     }
 
     /**

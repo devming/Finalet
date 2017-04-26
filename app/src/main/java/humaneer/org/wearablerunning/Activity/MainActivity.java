@@ -145,11 +145,11 @@ public class MainActivity extends BlunoLibrary {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    MainFragment mainFragment = new MainFragment();
+                    MainFragment mainFragment = new MainFragment().newInstance();
                     mainFragment.setMainActivity(MainActivity.this);
                     return mainFragment;
                 case 1:
-                    return new DataFragment();
+                    return new DataFragment().newInstance();
 //                case 2:
 //                    return new FriendFragment();
                 default:

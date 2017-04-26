@@ -1,38 +1,39 @@
 package humaneer.org.wearablerunning.Fragment;
 
-import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManagerNonConfig;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import humaneer.org.wearablerunning.DataRecyclerViewAdapter;
+import humaneer.org.wearablerunning.Model.MainModel;
 import humaneer.org.wearablerunning.MyItem;
 import humaneer.org.wearablerunning.R;
+import humaneer.org.wearablerunning.databinding.FragmentDataBinding;
 
 public class DataFragment extends Fragment {
 
-    TextView textviewDistance;
-    TextView textviewTime;
-    TextView textviewAvgSpeed;
+    private FragmentDataBinding binding;
+    private MainModel mainModel;
+
+    private RecyclerView.LayoutManager mLayoutManager;
+    private DataRecyclerViewAdapter adapter;
 
     double distance = 0.0;
     int time = 0;
@@ -62,50 +63,48 @@ public class DataFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        ConstraintLayout view = (ConstraintLayout) inflater.inflate(R.layout.fragment_data, container, false);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        MyItem myItem = new MyItem();
-//        String dateWeek = myItem.
+        binding = FragmentDataBinding.bind(getView());
 
+        // RecyclerView에 LayoutManager 할당
+        binding.recyclerViewDate.setLayoutManager(mLayoutManager);
 
-        float []dataObjects = new float[3];
-        dataObjects[0] = 1.5f;
-        dataObjects[1] = 3.3f;
-        dataObjects[2] = 2.6f;
+        Log.d("### DataFragment", "onActivityCreated");
+        adapter = new DataRecyclerViewAdapter();
+        Log.d("### adapter null", "");
 
+        binding.recyclerViewDate.setAdapter(adapter);
 
-        List<Entry> entries = new ArrayList<Entry>();
-        for(float data : dataObjects) {
-            entries.add(new Entry(data, data));
-        }
-
-        LineChart chart = (LineChart) view.findViewById(R.id.dataChart);
-
-        LineDataSet dataSetGoal = new LineDataSet(entries, "Goal");
-        dataSetGoal.setColor(R.color.colorAccent);
-        dataSetGoal.setValueTextColor(R.color.colorAccent);
-        LineDataSet dataSetCurrent = new LineDataSet(entries, "My Status");
-        dataSetCurrent.setColor(R.color.colorPrimary);
-        dataSetCurrent.setValueTextColor(R.color.colorPrimary);
+        mainModel = new MainModel();
 
 
-        LineData lineData = new LineData(dataSetCurrent);
-        chart.setData(lineData);
-        chart.invalidate();
+        LineData lineData1 = new LineData(mainModel.getDataSetCurrent());
+        binding.dataChart.setData(lineData1);
+        binding.dataChart.invalidate();
 
-//        textviewDistance = (TextView) view.findViewById(R.id.textview_distance);
-//        textviewTime = (TextView) view.findViewById(R.id.textview_time);
-//        textviewAvgSpeed = (TextView) view.findViewById(R.id.textview_speed);
 
-        return view;
+        LineData lineData2 = new LineData(mainModel.getDataSetGoal());
+        binding.dataChart.setData(lineData2);
+        binding.dataChart.invalidate();
+
+
+        adapter.add(mainModel.getDefaultDateData());
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
+        // Inflate the layout for this fragment
+        ConstraintLayout view = (ConstraintLayout) inflater.inflate(R.layout.fragment_data, container, false);
+
+        Log.d("### DataFragment", "onCreateView");
+        // RecyclerView Layout Manager 설정
+        mLayoutManager = new LinearLayoutManager(container.getContext(), LinearLayoutManager.VERTICAL, false);
+
+
+        return view;
     }
 }
