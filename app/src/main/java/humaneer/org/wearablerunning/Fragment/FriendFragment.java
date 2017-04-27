@@ -31,7 +31,6 @@ public class FriendFragment extends Fragment {
         bleList.add("d");
     }
 
-    // TODO: Rename and change types and number of parameters
     public static FriendFragment newInstance() {
         FriendFragment fragment = new FriendFragment();
         Bundle args = new Bundle();

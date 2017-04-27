@@ -72,35 +72,31 @@ public class MainModel {
     private void setDefaultDateData() {
         items = new ArrayList<MyItem>();
 
-//        Log.d("Day1", today.getFirstDayOfWeek()+" [:] "+Calendar.MONDAY);
-//        Log.d("Day1 today.tostring()", today.toString());
-//        Log.d("Day1 getTime", today.getTime()+" [:] "+Calendar.MONDAY);
-//        Log.d("Day1 DAY_OF_WEEK", Calendar.DAY_OF_WEEK + "");
+        setDateList(0);
 
-        switch (Calendar.getInstance().DAY_OF_WEEK){
-            case Calendar.MONDAY: // MON
-                setDateList(0);
-                break;
-            case Calendar.TUESDAY: // TUE
-                setDateList(1);
-                break;
-            case Calendar.WEDNESDAY: // WED
-                setDateList(2);
-                break;
-            case Calendar.THURSDAY: // THU
-                setDateList(3);
-                break;
-            case Calendar.FRIDAY: // FRI
-                setDateList(4);
-                break;
-            case Calendar.SATURDAY: // SAT
-                setDateList(5);
-                break;
-            case Calendar.SUNDAY: // SUN
-                setDateList(6);
-                break;
-
-        }
+//        switch (Calendar.getInstance().DAY_OF_WEEK){
+//            case Calendar.MONDAY: // MON
+//                setDateList(0);
+//                break;
+//            case Calendar.TUESDAY: // TUE
+//                setDateList(1);
+//                break;
+//            case Calendar.WEDNESDAY: // WED
+//                setDateList(2);
+//                break;
+//            case Calendar.THURSDAY: // THU
+//                setDateList(3);
+//                break;
+//            case Calendar.FRIDAY: // FRI
+//                setDateList(4);
+//                break;
+//            case Calendar.SATURDAY: // SAT
+//                setDateList(5);
+//                break;
+//            case Calendar.SUNDAY: // SUN
+//                setDateList(6);
+//                break;
+//        }
 
 
 //        // TODO: DB에서 날짜 데이터 불러오기

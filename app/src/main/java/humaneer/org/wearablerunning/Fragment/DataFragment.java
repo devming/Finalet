@@ -44,7 +44,6 @@ public class DataFragment extends Fragment {
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static DataFragment newInstance() {
         DataFragment fragment = new DataFragment();
         Bundle args = new Bundle();

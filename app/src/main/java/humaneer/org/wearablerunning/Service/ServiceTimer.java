@@ -124,7 +124,6 @@ public class ServiceTimer extends Service implements Runnable {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
