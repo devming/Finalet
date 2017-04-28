@@ -1,7 +1,9 @@
 package humaneer.org.wearablerunning.Fragment;
 
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -13,9 +15,16 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
+
+import java.util.ArrayList;
 
 import humaneer.org.wearablerunning.Activity.MainActivity;
 import humaneer.org.wearablerunning.R;
+import humaneer.org.wearablerunning.Service.ServiceGPS;
 import humaneer.org.wearablerunning.Service.ServiceTimer;
 
 
@@ -26,11 +35,13 @@ public class MainFragment extends Fragment {
 
 //    private Intent gpsServiceIntent = null;
 
+    PermissionListener permissionListener;
     /**
      * Widget variables
      */
     ImageView buttonRunning;
     ConstraintLayout mRelativeLayout;
+    boolean isGranted = false;
 
     public MainFragment() {
     }
@@ -44,8 +55,9 @@ public class MainFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
+    static MainFragment fragment;
     public static MainFragment newInstance() {
-        MainFragment fragment = new MainFragment();
+        fragment = new MainFragment();
         Bundle args = new Bundle();
 //            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
@@ -76,75 +88,32 @@ public class MainFragment extends Fragment {
 
                 Log.d("### Start Clicked ###", "Start Clicked" );
 
-                startButtonClickedEventHandler();
+
+                permissionListener = new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted() {
+                        isGranted = true;
+                    }
+
+                    @Override
+                    public void onPermissionDenied(ArrayList<String> arrayList) {
+                        isGranted = false;
+                    }
+                };
+
+                new TedPermission(getActivity())
+                        .setPermissionListener(permissionListener)
+                        .setDeniedMessage("GPS를 동작시키세요.")
+                        .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+                        .check();
+
+                if(isGranted)
+                    startButtonClickedEventHandler();
+
                 // Test Logic
-//                PermissionListener permissionListener = new PermissionListener() {
-//                    @Override
-//                    public void onPermissionGranted() {
-////                        Toast.makeText(getActivity(), "Permission Granted", Toast.LENGTH_SHORT).show();
-//                        startButtonClickedEventHandler();
-//                    }
-//
-//                    @Override
-//                    public void onPermissionDenied(ArrayList<String> arrayList) {
-//
-////                        Toast.makeText(getActivity(), "Permission Denied", Toast.LENGTH_SHORT).show();
-//                    }
-//                };
-//
-//                new TedPermission(getActivity())
-//                        .setPermissionListener(permissionListener)
-//                        .setDeniedMessage("GPS를 동작시키세요.")
-//                        .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-//                        .check();
             }
         });
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-//            ServiceTimerInstance.setOnTextEventListener(new OnTextEventListener() {
-//                @Override
-//                public void onTextEvent(String text) {
-//                    final String data = text;
-//                    try {
-//                        getActivity().runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//
-//                                textviewTime.setText(data);
-//                            }
-//                        });
-//                    }catch (NullPointerException e) {
-//                        Log.e("Go to background..", e.getMessage());
-//                    }
-//
-//                }
-
-//                @Override
-//                public void onTextEvent(String distance, String velocity) {}
-//            });
-//
-//            ServiceGpsInstance.setOnTextEventListener(new OnTextEventListener() {
-//                @Override
-//                public void onTextEvent(String text) {}
-//
-//                @Override
-//                public void onTextEvent(String distance, String velocity) {
-//                    final String d = distance;
-//                    final String v = velocity;
-//                    try {
-//                        getActivity().runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                textviewDistance.setText(d + "m / 1500m");
-//                                textviewAvgSpeed.setText(v + "km/h");
-//                            }
-//                        });
-//                    }catch (NullPointerException e) {
-//                        Log.e("Go to background..", e.getMessage());
-//                    }
-//                }
-//            });
-/////////////////////////////////////////////////////////////////////////////////////////////////
         return mRelativeLayout;
     }
 
@@ -152,129 +121,23 @@ public class MainFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-//        Toast.makeText(getActivity(), ServiceGPS.IsServiceRunning+"", Toast.LENGTH_SHORT).show();
-//        if(ServiceGPS.IsServiceRunning) {   // 서비스 가동중.
-////            ServiceTimerInstance.setTimer(getApplicationContext());
-//            textviewStartbutton.setText("Stop");
-//            textviewDistance.setText(String.format("%.0f", ServiceGPS.getDistance()) + "m / 1500m");
-//            textviewTime.setText(ServiceTimer.getTimeStr());
-//            textviewAvgSpeed.setText(String.format("%.2f", ServiceGPS.getSpeed()) + "km/h");
-//        } else {
-//            textviewStartbutton.setText("Start");
-//            textviewDistance.setText("0m / 1500m");
-//            textviewAvgSpeed.setText("0.00km/h");
-//        }
     }
 
-    // Code to manage Service lifecycle.
-//    private final ServiceConnection mGpsServiceConnection = new ServiceConnection() {
-//
-//        @Override
-//        public void onServiceConnected(ComponentName componentName, IBinder service) {
-//            serviceGPS = ((ServiceGPS.LocalBinder) service).getService();
-//            if (!serviceGPS.initialize()) {
-//                Log.e(TAG, "Unable to initialize GPS");
-//                return;
-//            }
-//            Log.e(TAG, "Initializing GPS is successful.");
-//            // Automatically connects to the device upon successful start-up initialization.
-////            serviceGPS.connect(mDeviceAddress);
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName componentName) {
-//            serviceGPS = null;
-//        }
-//    };
-
-//    private final ServiceConnection mTimerServiceConnection = new ServiceConnection() {
-//
-//        @Override
-//        public void onServiceConnected(ComponentName componentName, IBinder service) {
-//            serviceTimer = ((serviceTimer.LocalBinder) service).getService();
-//            if (!serviceTimer.initialize()) {
-//                Log.e(TAG, "Unable to initialize Timer");
-//                return;
-//            }
-//            Log.e(TAG, "Initializing Timer is successful.");
-//            // Automatically connects to the device upon successful start-up initialization.
-////            serviceGPS.connect(mDeviceAddress);
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName componentName) {
-//            serviceTimer = null;
-//        }
-//    };
 
     public void startButtonClickedEventHandler() {
-//        Toast.makeText(getActivity(), ServiceGPS.IsServiceRunning + "", Toast.LENGTH_SHORT).show();
-//        Log.d("### servicerunning ###", ServiceGPS.IsServiceRunning + "" );
-
-//        if(gpsServiceIntent == null)
-//            gpsServiceIntent = new Intent(getContext(), ServiceGPS.class);
 
         Animation anim = AnimationUtils.loadAnimation(mMainActivity, R.anim.toalpha1);
-        MainActivity.setLocationRunning(false);
 
         if(MainActivity.isLocationRunning()) {   // 시작 중인 상태(STOP을 누를 경우)
-//            ServiceGPS.IsServiceRunning = false;
-            mMainActivity.removeLocationManager();
-            Log.d("## FALSE", "Stop!");
+
+            Log.d("###  FALSE", "Stop!");
+            stopServiceGPS();
+            stopServiceTimer();
+
+            MainActivity.setLocationRunning(false);
 
             buttonRunning.setImageResource(R.drawable.btn_start);
-//            getActivity().stopService(gpsServiceIntent);
-
-//                double latitude = ServiceGpsInstance.getLatitude();
-//                double longitude = ServiceGpsInstance.getLongitude();
-//                LatLng myPosition = new LatLng(latitude, longitude);
-//                MapFragment.GlobalGoogleMap.addMarker(new MarkerOptions().position(myPosition).title("Finish Point"));
-
-//                    ServiceGpsInstance.stopService(gpsIntent);
-//                    ServiceTimerInstance.stopService(timerIntent);
-
-//                ServiceGpsInstance.onDestroy();
-//                ServiceTimerInstance.onDestroy();
         } else {    // 아직 시작하지 않은 상태(Start를 누를 경우)
-            // 1. 타이머를 돌린다. (ServiceTimer)
-            // 2. 거리 측정을 시작한다. (ServiceGPS)
-
-//                int gpsCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION);
-//
-//                if(gpsCheck == PackageManager.PERMISSION_DENIED) {
-//                    Toast.makeText(getActivity(), "GPS를 동작시키세요.", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//
-//
-//            if(timerIntent == null) {
-////                    timerIntent = new Intent(TIMER_TAG);
-//
-//                timerIntent = new Intent(getContext(), ServiceTimer.class);
-//            }
-//
-//
-//                    ServiceTimerInstance.startService(timerIntent);
-//                    ServiceTimerInstance.setTimer(getApplicationContext());
-//
-//                Thread timerThread = new Thread(ServiceTimerInstance);
-//                timerThread.start();
-//
-//
-//            if(gpsIntent == null){
-////                    gpsIntent = new Intent(GPS_TAG);
-//
-//                gpsIntent = new Intent(getContext(), ServiceGPS.class);
-//            }
-//
-//            Intent timerServiceIntent = new Intent(getActivity(), ServiceTimer.class);
-//            getContext().bindService(timerServiceIntent, mTimerServiceConnection, BIND_AUTO_CREATE);
-
-
-            // button 애니메이션 실행
-            buttonRunning.startAnimation(anim);
-
-
             // GPS 서비스 실행
 
             startServiceGPS();
@@ -282,49 +145,38 @@ public class MainFragment extends Fragment {
 
             MainActivity.setLocationRunning(true);
 
-            Log.d("## True", "Start!");
-//            ServiceGPS.IsServiceRunning = true;
             buttonRunning.setImageResource(R.drawable.btn_stop);
 
-//                    ServiceGpsInstance.startService(gpsIntent);
-//                ServiceGpsInstance.setmContext(getActivity());
-//                ServiceGpsInstance.setGoogleMap(MapFragment.GlobalGoogleMap);
-//                ServiceGpsInstance.startMap();
-
-
-
-//                    Intent serviceGPSIntent = new Intent(getApplicationContext(), ServiceGPS.class);
-//                    ServiceGpsInstance.startService(serviceGPSIntent);  // service의 Override된 run 메소드 실행
-//                    ServiceGpsInstance.bindService)
-//
-//                double latitude = ServiceGpsInstance.getLatitude();
-//                double longitude = ServiceGpsInstance.getLongitude();
-
-            // Add a marker in Sydney and move the camera
-//                LatLng myPosition = new LatLng(latitude, longitude);
-
-//                MapFragment.GlobalGoogleMap.setMyLocationEnabled(true);
-//                MapFragment.GlobalGoogleMap.addMarker(new MarkerOptions().position(myPosition).title("Starting Point"));
-//                MapFragment.GlobalGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(myPosition));
-//                MapFragment.GlobalGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(myPosition));
-
+            Log.d("### Fragment", "Start!");
         }
+        // button 애니메이션 실행
+        buttonRunning.startAnimation(anim);
     }
     public void startServiceGPS() {
 
-        mMainActivity.initLocation();
+        Log.d("### Fragment ", "startServiceGPS");
 
-//        gpsServiceIntent.setPackage(GPS_TAG);
-//        getActivity().startService(gpsServiceIntent);
-//        getActivity().registerReceiver(new FinishRunning(), makeUpdateIntentFilter());
+        Intent intent = new Intent(fragment.getContext(), ServiceGPS.class);
+        getActivity().startService(intent);
+    }
+
+    public void stopServiceGPS() {
+
+        Intent intent = new Intent(fragment.getContext(), ServiceGPS.class);
+        getActivity().stopService(intent);
     }
 
     public void startServiceTimer() {
 
         // Tiemr 서비스 실행
-        ServiceTimer serviceTimer = new ServiceTimer();
-        serviceTimer.setContext(getActivity(), mMainActivity);
-        serviceTimer.run();
+        Intent intent = new Intent(fragment.getContext(), ServiceTimer.class);
+        getActivity().startService(intent);
+    }
+
+    public void stopServiceTimer() {
+
+        Intent intent = new Intent(fragment.getContext(), ServiceTimer.class);
+        getActivity().stopService(intent);
     }
 
 

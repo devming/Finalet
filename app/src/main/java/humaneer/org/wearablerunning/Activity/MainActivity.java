@@ -46,16 +46,13 @@ public class MainActivity extends BlunoLibrary {
 
     private boolean isFirstRunning = true;
 
-//    public static DBHelper dbHelper;
-//    public MyItem myItem;
-
     private SlidingTabLayout mSlidingTabLayout;
     private ViewPager mViewPager;
 
     private Button button;
     private EditText serialSendText;
 
-    private static boolean isLocationRunning = false;
+    private static boolean isLocationRunning = false;   // GPS 서비스 시작했는지 안했는지.(=버튼이 눌렸는지 안눌렸는지)
 
     public static boolean isLocationRunning() {
         return isLocationRunning;
@@ -70,30 +67,9 @@ public class MainActivity extends BlunoLibrary {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // DB 생성.
-//        dbHelper = new DBHelper(getApplicationContext());
-
-//        myItem = new MyItem();
-        // 서비스 생성자 생성.
-//        ServiceTimerInstance = new ServiceTimer();
-//        ServiceGpsInstance = new ServiceGPS();
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-//        ImageView imageViewLogo = (ImageView) findViewById(R.id.image_logo);
-////        Bitmap bmp1 = BitmapFactory.decodeResource(getResources(), R.drawable.font_logo_top);
-////        int width=(int)(getWindowManager().getDefaultDisplay().getWidth()); // 가로 사이즈 지정
-////        int height=(int)(getWindowManager().getDefaultDisplay().getHeight() * 0.8); // 세로 사이즈 지정
-////        Bitmap resizedbitmap1=Bitmap.createScaledBitmap(bmp1, width, height, true); // 이미지 사이즈 조정
-////        imageViewLogo.setImageBitmap(resizedbitmap1); // 이미지뷰에 조정한 이미지 넣기
-//        imageViewLogo.setImageResource(R.drawable.font_logo_top);
-
         ImageView imageViewUser = (ImageView) findViewById(R.id.image_user);
-//        Bitmap bmp2 = BitmapFactory.decodeResource(getResources(), R.drawable.profile_icon);
-//        width=(int)(getWindowManager().getDefaultDisplay().getWidth()); // 가로 사이즈 지정
-//        height=(int)(getWindowManager().getDefaultDisplay().getHeight() * 0.8); // 세로 사이즈 지정
-//        Bitmap resizedbitmap2=Bitmap.createScaledBitmap(bmp2, width, height, true); // 이미지 사이즈 조정
-//        imageViewUser.setImageBitmap(resizedbitmap2); // 이미지뷰에 조정한 이미지 넣기
         imageViewUser.setImageResource(R.drawable.profile_icon);
 
         setSupportActionBar(toolbar);
@@ -107,8 +83,6 @@ public class MainActivity extends BlunoLibrary {
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
         mSlidingTabLayout.setViewPager(mViewPager);
 
-        // 초기 설정 페이지
-//        mViewPager.setCurrentItem(1);
 
         onCreateProcess();														//onCreate Process by BlunoLibrary
 
@@ -122,9 +96,7 @@ public class MainActivity extends BlunoLibrary {
             @Override
             public void onClick(View v) {
 
-
                 serialSend(serialSendText.getText().toString());				//send the data to the BLUNO
-
             }
         });
     }
@@ -150,8 +122,6 @@ public class MainActivity extends BlunoLibrary {
                     return mainFragment;
                 case 1:
                     return new DataFragment().newInstance();
-//                case 2:
-//                    return new FriendFragment();
                 default:
                     return null;
             }
@@ -282,78 +252,6 @@ public class MainActivity extends BlunoLibrary {
 
     }
 
-    /**
-     * Location variables
-     */
-    LocationManager locationManager;
-    LocationListener locationListener;
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if(requestCode == 1) {
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            }
-        }
-    }
-
-    Location curLocation;
-
-    public void initLocation() {
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                Log.d(TAG, "## initLocation changed");
-//                Toast.makeText(getApplicationContext(), "initLocation" + location.toString(), Toast.LENGTH_SHORT).show();
-                // CODE 입력
-                curLocation = location;
-//                myItem.setDistance();
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-
-        if(Build.VERSION.SDK_INT < 23) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-        } else {
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-            } else {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-                Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-                if(isFirstRunning) {
-                    curLocation = lastKnownLocation;
-                    isFirstRunning = false;
-                }
-                double distance = lastKnownLocation.distanceTo(curLocation);
-                button.setText((distance/1000)+" km");
-            }
-        }
-    }
-
-    public void removeLocationManager() {
-
-        isLocationRunning = false;
-        locationManager.removeUpdates(locationListener);
-    }
 
 
 //    boolean exitFlag = false;
