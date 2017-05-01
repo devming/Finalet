@@ -1,25 +1,20 @@
 package humaneer.org.wearablerunning.Service;
 
-import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
-import humaneer.org.wearablerunning.OnTextEventListener;
+import static humaneer.org.wearablerunning.Fragment.MainFragment.OnTextEventListenerObject;
 
 public class ServiceGPS extends Service {
 
@@ -48,16 +43,10 @@ public class ServiceGPS extends Service {
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
 
     // 최소 GPS 정보 업데이트 시간 밀리세컨이므로 5초
-    private static final long MIN_TIME_BW_UPDATES = 1000*5;//1000 * 10 * 1;
+    private static final long MIN_TIME_BW_UPDATES = 0;//1000 * 10 * 1;
 
     public static double getDistance() {
         return distance;
-    }
-
-    private OnTextEventListener mOnTextEventListener;
-
-    public void setOnTextEventListener(OnTextEventListener listener) {
-        mOnTextEventListener = listener;
     }
 
     @Override
@@ -79,7 +68,6 @@ public class ServiceGPS extends Service {
     public void running() {
 
         Log.d("### GPS Service", "running");
-        Toast.makeText(getApplicationContext(), "running", Toast.LENGTH_SHORT).show();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new GpsListener();
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_DISTANCE_CHANGE_FOR_UPDATES, MIN_TIME_BW_UPDATES, locationListener);
@@ -116,10 +104,12 @@ public class ServiceGPS extends Service {
         @Override
         public void onLocationChanged(Location location) {
             if (location != null) {
-                speed = Double.parseDouble(String.format("%.3f", location.getSpeed()));
+                if(speed < 10)
+                    speed = Double.parseDouble(String.format("%.2f", location.getSpeed()));
+                else
+                    speed = Double.parseDouble(String.format("%.1f", location.getSpeed()));
 
-                Log.d("### GpsListener", "speed:"+speed);
-                Toast.makeText(getApplicationContext(), "speed:"+speed, Toast.LENGTH_SHORT).show();
+                OnTextEventListenerObject.onTextEvent(speed+"");
             }
         }
 

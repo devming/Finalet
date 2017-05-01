@@ -1,15 +1,19 @@
 package humaneer.org.wearablerunning.Service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import humaneer.org.wearablerunning.Activity.MainActivity;
 import humaneer.org.wearablerunning.Fragment.MainFragment;
-import humaneer.org.wearablerunning.OnTextEventListener;
+import humaneer.org.wearablerunning.R;
 
 public class ServiceTimer extends Service {
 
@@ -18,6 +22,8 @@ public class ServiceTimer extends Service {
     }
 
     private static int timerCount = 0;
+
+    private Context mContext;
 
     private int seconds = 0;
     private int minutes = 0;
@@ -31,7 +37,7 @@ public class ServiceTimer extends Service {
     }
     private static String timeStr = "";
 
-    private OnTextEventListener mOnTextEventListener;
+
     public ServiceTimer(){
     }
 
@@ -40,28 +46,23 @@ public class ServiceTimer extends Service {
         super.onCreate();
     }
 
-
-    public void setOnTextEventListener(OnTextEventListener listener) {
-        mOnTextEventListener = listener;
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-//        mTimer = new Timer();
-        Log.d("## ServiceTimer", "onStartCommand");
+
+        mContext = this;
 
         new Thread(new Runnable() {
+
             @Override
             public void run() {
-
+//                broadcastUpdate(MainFragment.ACTION_TIMER_CHANGED);
                 while(MainActivity.isLocationRunning()) {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
 
+                    }
                     Log.d("### timer3 ### zz", "" + timerCount);
 
                     seconds = timerCount % 60;
@@ -79,80 +80,87 @@ public class ServiceTimer extends Service {
                     if (hours < 10)
                         hoursStr = "0" + hours;
 
-                    timeStr = hoursStr + ":" + minutesStr + ":" + secondsStr;
+                    if (hours == 0)
+                        timeStr = minutesStr + ":" + secondsStr;
+                    else
+                        timeStr = hoursStr + ":" + minutesStr;
 
-//            Log.d("ServiceTimer", mOnTextEventListener.toString());
+                    if (MainFragment.OnTextEventListenerObject != null) {
+                        //                    handler.sendEmptyMessage(1);
+                        String percentage = String.format("%.2f", timerCount / 30.0);
+                        if(timerCount/30.0 >=10.0) {
+                            percentage = String.format("%.1f", timerCount / 30.0);
+                        } else if(timerCount/30.0 == 100.0) {
+                            percentage = String.format("%.0f", timerCount / 30.0);
 
-                    if (mOnTextEventListener != null) {
-                        mOnTextEventListener.onTextEvent(timeStr, seconds / 30.0 + "");
+
+//                            Intent notificationIntent = new Intent(mContext, MainActivity.class);
+//                            PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//                            NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
+//                            builder.setContentTitle("1500m 완주 성공")
+//                                    .setContentText(ServiceTimer.getTimeStr())
+//                                    .setSmallIcon(R.mipmap.ic_launcher)
+//                                    .setContentIntent(contentIntent)
+//                                    .setAutoCancel(true)
+//                                    .setWhen(System.currentTimeMillis())
+//                                    .setDefaults(Notification.DEFAULT_ALL);
+//
+//
+//                            NotificationManager nm = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+//                            nm.notify(777, builder.build());
+
+
+                            NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
+                            builder.setContentTitle("Mission Complete! #Running 50 minutes")
+                                    .setContentText(ServiceTimer.getTimeStr())
+                                    .setSmallIcon(R.mipmap.ic_launcher)
+                                    .setAutoCancel(true)
+                                    .setWhen(System.currentTimeMillis())
+                                    .setDefaults(Notification.DEFAULT_ALL);
+
+                            Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+
+                            TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
+                            stackBuilder.addParentStack(MainActivity.class);
+                            stackBuilder.addNextIntent(resultIntent);
+
+                            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                            builder.setContentIntent(resultPendingIntent);
+                            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                            notificationManager.notify(777, builder.build());
+                        }
+                        MainFragment.OnTextEventListenerObject.onTextEvent(timeStr,percentage);
                     }
-//            Toast.makeText(mContext,timeStr, Toast.LENGTH_SHORT).show();
-                    if(timerCount % 4 == 0)
-                        broadcastUpdate(MainFragment.ACTION_TIMER_CHANGED);
-
                     timerCount++;
                 }
             }
-        }).run();
-
-
-        return START_STICKY;
+        }).start();
+        return START_NOT_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        mTimer.cancel();
         timerCount = 0;
-//        mTimer = null;
+        seconds = 0;
+        minutes = 0;
+        hours = 0;
     }
 
-
-//    public void setTimer(Context context) {
-//
+//    Context mContext;
+//    public void setContext(Context context) {
 //        mContext = context;
-//        mTimer = new Timer();
-//        mTimer.schedule(new TimerTask(){
-//            public void run() {
-//                Log.d("### timer3 ### zz" , ""+timerCount);
-//
-//                seconds = timerCount % 60;
-//                minutes = timerCount / 60;
-//                hours = timerCount / 3600;
-//
-//                secondsStr = seconds+"";
-//                minutesStr = minutes+"";
-//                hoursStr = hours+"";
-//
-//                if (seconds < 10)
-//                    secondsStr = "0" + seconds;
-//                if (minutes < 10)
-//                    minutesStr = "0" + minutes;
-//                if (hours < 10)
-//                    hoursStr = "0" + hours;
-//
-//                timeStr = hoursStr + ":" + minutesStr + ":" + secondsStr;
-//
-//                Log.d("ServiceTimer", mOnTextEventListener.toString());
-//
-//                if (mOnTextEventListener != null) {
-//                    mOnTextEventListener.onTextEvent(timeStr);
-//                }
-//                timerCount++;
-//
-//
-//            }
-//        }, 0, 1000);
 //    }
-
     @Override
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    private void broadcastUpdate(final String action) {
-        final Intent intent = new Intent(action);
-
-        getApplicationContext().sendBroadcast(intent);
-    }
+//    private void broadcastUpdate(final String action) {
+//        final Intent intent = new Intent(action);
+//
+//        mContext.sendBroadcast(intent);
+//    }
 }

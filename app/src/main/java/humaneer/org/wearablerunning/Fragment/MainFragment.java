@@ -2,7 +2,6 @@ package humaneer.org.wearablerunning.Fragment;
 
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -15,7 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
@@ -23,6 +22,7 @@ import com.gun0912.tedpermission.TedPermission;
 import java.util.ArrayList;
 
 import humaneer.org.wearablerunning.Activity.MainActivity;
+import humaneer.org.wearablerunning.OnTextEventListener;
 import humaneer.org.wearablerunning.R;
 import humaneer.org.wearablerunning.Service.ServiceGPS;
 import humaneer.org.wearablerunning.Service.ServiceTimer;
@@ -33,14 +33,19 @@ public class MainFragment extends Fragment {
     private final static String TAG = MainFragment.class.getSimpleName();
     private final String GPS_TAG = "humaneer.org.wearablerunning.Services.GPS";
 
+    public static OnTextEventListener OnTextEventListenerObject;
 //    private Intent gpsServiceIntent = null;
 
-    PermissionListener permissionListener;
+
     /**
      * Widget variables
      */
     ImageView buttonRunning;
     ConstraintLayout mRelativeLayout;
+    TextView textViewAim;
+    TextView textViewTime;
+    TextView textViewSpeed;
+
     boolean isGranted = false;
 
     public MainFragment() {
@@ -75,6 +80,10 @@ public class MainFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, true);
         mRelativeLayout = (ConstraintLayout) view.findViewById(R.id.main_layout);
 
+        textViewAim = (TextView) view.findViewById(R.id.textview_aim);
+        textViewTime = (TextView) view.findViewById(R.id.textview_time);
+        textViewSpeed = (TextView) view.findViewById(R.id.textView_speed);
+
         buttonRunning = (ImageView) view.findViewById(R.id.imagebutton_running);
         buttonRunning.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,7 +98,7 @@ public class MainFragment extends Fragment {
                 Log.d("### Start Clicked ###", "Start Clicked" );
 
 
-                permissionListener = new PermissionListener() {
+                PermissionListener permissionListener = new PermissionListener() {
                     @Override
                     public void onPermissionGranted() {
                         isGranted = true;
@@ -107,22 +116,66 @@ public class MainFragment extends Fragment {
                         .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                         .check();
 
-                if(isGranted)
+//                if(isGranted) // 이거 넣으면 위에 check()하는데 시간이 걸려서 isGranted가 true로 되기전에 요기 문장이 수행되어서 if문이 false인 상태로 지나침..
+//                              // 그래서 일단 모든 사용자가 허용을 누른다고 생각하고 그냥 주석막아놓음! - devming
                     startButtonClickedEventHandler();
 
-                // Test Logic
+            }
+        });
+
+        setOnTextEventListener(new OnTextEventListener() {
+            @Override
+            public void onTextEvent(String s) {
+                final String speed = s;
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            textViewSpeed.setText(speed);
+                        }
+                    });
+                }catch (NullPointerException e) {
+                    Log.e("Go to background..", e.getMessage());
+                }
+            }
+
+            @Override
+            public void onTextEvent(String t, String p) {
+                final String time = t;
+                final String percentage = p;
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                        textViewTime.setText(time);
+                        textViewAim.setText(percentage);
+                        }
+                    });
+                }catch (NullPointerException e) {
+                    Log.e("Go to background..", e.getMessage());
+                }
             }
         });
 
         return mRelativeLayout;
     }
 
+    public void setOnTextEventListener(OnTextEventListener listener) {
+        OnTextEventListenerObject = listener;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
+        if(MainActivity.isLocationRunning()) {
+            buttonRunning.setImageResource(R.drawable.btn_stop);
+        } else {
+            buttonRunning.setImageResource(R.drawable.btn_start);
+        }
 
     }
-
 
     public void startButtonClickedEventHandler() {
 
@@ -130,45 +183,46 @@ public class MainFragment extends Fragment {
 
         if(MainActivity.isLocationRunning()) {   // 시작 중인 상태(STOP을 누를 경우)
 
-            Log.d("###  FALSE", "Stop!");
+            buttonRunning.setImageResource(R.drawable.btn_start);
+            MainActivity.setLocationRunning(false);
             stopServiceGPS();
             stopServiceTimer();
-
-            MainActivity.setLocationRunning(false);
-
-            buttonRunning.setImageResource(R.drawable.btn_start);
         } else {    // 아직 시작하지 않은 상태(Start를 누를 경우)
             // GPS 서비스 실행
 
+            buttonRunning.setImageResource(R.drawable.btn_stop);
+            MainActivity.setLocationRunning(true);
             startServiceGPS();
             startServiceTimer();
-
-            MainActivity.setLocationRunning(true);
-
-            buttonRunning.setImageResource(R.drawable.btn_stop);
-
-            Log.d("### Fragment", "Start!");
         }
         // button 애니메이션 실행
         buttonRunning.startAnimation(anim);
     }
+
+//    FinishRunning finishRunning = new FinishRunning();
     public void startServiceGPS() {
 
-        Log.d("### Fragment ", "startServiceGPS");
-
         Intent intent = new Intent(fragment.getContext(), ServiceGPS.class);
+
         getActivity().startService(intent);
+//        getActivity().registerReceiver(finishRunning, makeUpdateIntentFilter());
     }
 
     public void stopServiceGPS() {
 
         Intent intent = new Intent(fragment.getContext(), ServiceGPS.class);
         getActivity().stopService(intent);
+//        getActivity().unregisterReceiver(finishRunning);
     }
+
+//    ServiceTimer serviceTimer;
 
     public void startServiceTimer() {
 
         // Tiemr 서비스 실행
+//        serviceTimer = new ServiceTimer();
+//        serviceTimer.setContext(getContext());
+
         Intent intent = new Intent(fragment.getContext(), ServiceTimer.class);
         getActivity().startService(intent);
     }
