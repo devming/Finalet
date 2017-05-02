@@ -5,17 +5,16 @@ import android.util.Log;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
-import java.util.SimpleTimeZone;
 
-import humaneer.org.wearablerunning.MyItem;
+import humaneer.org.wearablerunning.Activity.MainActivity;
 import humaneer.org.wearablerunning.R;
+import io.realm.RealmResults;
 
 /**
  * Created by Minki on 2017-04-25.
@@ -25,12 +24,18 @@ public class MainModel {
 
     LineDataSet dataSetGoal;
     LineDataSet dataSetCurrent;
-    List<MyItem> items;
+    List<UserVO> items;
 
     public MainModel() {
 
         setDefaultChartData();
         setDefaultDateData();
+    }
+
+    RealmResults<UserVO> userInfo = getUserInfo();
+
+    public RealmResults<UserVO> getUserInfo() {
+        return MainActivity.GetRealmObject().where(UserVO.class).findAll();
     }
 
     private void setDefaultChartData() {
@@ -65,14 +70,21 @@ public class MainModel {
         return dataSetCurrent;
     }
 
-    public List<MyItem> getDefaultDateData() {
+    public List<UserVO> getDefaultDateData() {
         return items;
     }
 
     private void setDefaultDateData() {
-        items = new ArrayList<MyItem>();
+        items = new ArrayList<UserVO>();
 
-        setDateList(0);
+        //TODO: Recycler View에 띄워줄 list에 넣기..
+        ListIterator<UserVO> list = userInfo.listIterator();
+
+        while(list.hasNext())
+            items.add(list.next());
+//        items.add(userInfo);
+
+//        setDateList();
 
 //        switch (Calendar.getInstance().DAY_OF_WEEK){
 //            case Calendar.MONDAY: // MON
@@ -100,8 +112,8 @@ public class MainModel {
 
 
 //        // TODO: DB에서 날짜 데이터 불러오기
-//        items = new ArrayList<MyItem>();
-//        MyItem itemData = new MyItem();
+//        items = new ArrayList<UserVO>();
+//        UserVO itemData = new UserVO();
 //        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-EEE", Locale.ENGLISH);
 //        itemData.setDate(dateFormat.format(new Date()));
 //        items.add(itemData);
@@ -123,19 +135,37 @@ public class MainModel {
 //        items.add(itemData);
     }
 
-    private void setDateList(int num) {
+    private void setDateList() {
 
-        MyItem itemData;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd EEE", Locale.ENGLISH);
+
+        Calendar calendar = Calendar.getInstance();
+        int weekNum = calendar.getFirstDayOfWeek();
+
+        Log.d("### TODAY", weekNum+"");
+
+        UserVO itemData;
+        itemData = new UserVO();
+        calendar.add(Calendar.DATE, weekNum);
+        itemData.setDate(dateFormat.format(calendar.getTime()));
+        items.add(itemData);
+
+    }
+
+    private void setDateList1() {
+
+        UserVO itemData;
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd EEE", Locale.ENGLISH);
 
         for(int i=3;i<10;i++) {
-            int weekNum = i-num;
+            int weekNum = i;
             if(i == 9)
-                weekNum = 2-num;
-            itemData = new MyItem();
+                weekNum = 2;
+            itemData = new UserVO();
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DATE, weekNum);
             itemData.setDate(dateFormat.format(calendar.getTime()));
+
             items.add(itemData);
         }
     }

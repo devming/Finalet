@@ -1,25 +1,37 @@
-package humaneer.org.wearablerunning;
+package humaneer.org.wearablerunning.Model;
 
 /**
  * Created by Minki on 2017-03-07.
  */
-import java.util.Date;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
-public class MyItem {
-    private int _id;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+public class UserVO extends RealmObject {
+    @PrimaryKey
+    private long _id;
     private double distance;
     private int timeSeconds;
     private double speed;
     private String date;
-    private int percentage;
+    private double percentage;
 
-    public int get_Id() {
+    public static String ID = "_id";
+    public static String DISTANCE = "distance";
+    public static String TIMESECONDS = "timeSeconds";
+    public static String SPEED = "speed";
+    public static String DATE = "date";
+    public static String PERCENTAGE = "percentage";
+
+    public long get_Id() {
         return _id;
     }
 
-    public void set_Id(int id) {
+    private void set_Id(long id) {
         this._id = id;
     }
 
@@ -53,6 +65,9 @@ public class MyItem {
 
     public void setDate(String date) {  // yyyy-MM-dd EEE
         this.date = date;
+        String[] d = date.split("-");
+        String id = d[0]+d[1]+d[2].split(" ")[0];
+//        set_Id(Long.parseLong(id));
     }
 
     public String getDayOfWeek() {
@@ -66,7 +81,7 @@ public class MyItem {
      * @return
      * @throws Exception
      */
-    public String getDateDay(String date, String dateType) throws Exception {
+    public String getDateString(String date, String dateType) throws Exception {
 
         String day = "";
 
@@ -105,7 +120,7 @@ public class MyItem {
         return day;
     }
 
-    public int getPercentage() { return percentage; }
+    public double getPercentage() { return percentage; }
 
-    public void setPercentage(int percentage) { this.percentage = percentage; }
+    public void setPercentage(double percentage) { this.percentage = percentage; }
 }

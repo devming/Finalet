@@ -1,22 +1,11 @@
 package humaneer.org.wearablerunning.Activity;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -25,42 +14,35 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
-import java.util.TimerTask;
-
-import humaneer.org.wearablerunning.DBHelper;
+import humaneer.org.wearablerunning.BLE.BlunoLibrary;
+import humaneer.org.wearablerunning.CustomPreferenceManager;
 import humaneer.org.wearablerunning.Fragment.DataFragment;
-import humaneer.org.wearablerunning.Fragment.FriendFragment;
 import humaneer.org.wearablerunning.Fragment.MainFragment;
-import humaneer.org.wearablerunning.MyItem;
+import humaneer.org.wearablerunning.Model.UserVO;
 import humaneer.org.wearablerunning.R;
 import humaneer.org.wearablerunning.Service.ServiceGPS;
 import humaneer.org.wearablerunning.Service.ServiceTimer;
 import humaneer.org.wearablerunning.SlidingTabLayout;
-import humaneer.org.wearablerunning.BLE.BlunoLibrary;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 public class MainActivity extends BlunoLibrary {
 
-    private boolean isFirstRunning = true;
-
-    private SlidingTabLayout mSlidingTabLayout;
-    private ViewPager mViewPager;
-
-    private Button button;
     private EditText serialSendText;
 
     private static boolean isLocationRunning = false;   // GPS 서비스 시작했는지 안했는지.(=버튼이 눌렸는지 안눌렸는지)
-
     public static boolean isLocationRunning() {
         return isLocationRunning;
     }
+    public static void setLocationRunning(boolean locationRunning) { isLocationRunning = locationRunning; }
 
-    public static void setLocationRunning(boolean locationRunning) {
-        isLocationRunning = locationRunning;
-    }
+    private static Realm mRealm;
+    public static Realm GetRealmObject() {return mRealm;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,13 +56,15 @@ public class MainActivity extends BlunoLibrary {
 
         setSupportActionBar(toolbar);
 
+        if(CustomPreferenceManager.isAlreadyRun(this))
+            realmInit();
 
         // View Pager
-        mViewPager = (ViewPager) findViewById(R.id.viewpager);
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mViewPager.setAdapter(new SectionsPagerAdapter(getSupportFragmentManager()));
 
         // 탭
-        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        SlidingTabLayout mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
         mSlidingTabLayout.setViewPager(mViewPager);
 
 
@@ -91,7 +75,7 @@ public class MainActivity extends BlunoLibrary {
 
         serialSendText = (EditText) findViewById(R.id.serialSendText);			//initial the EditText of the sending data
 
-        button = (Button) findViewById(R.id.btn_test_ble);
+        Button button = (Button) findViewById(R.id.btn_test_ble);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,6 +84,59 @@ public class MainActivity extends BlunoLibrary {
             }
         });
     }
+
+    public void realmInit() {
+
+        Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name("finalet.realm")
+                .schemaVersion(42)
+                .build();
+        mRealm = Realm.getInstance(config);
+
+        // TODO: 앱 실행시 User Info 초기화
+        // 1. Today 확인
+        long id = getTodayId();
+        if(id == 0 || id != getToday()) {   // id값이 없으면.(0일경우는 아예 데이터 자체가 없을 때, id != getToday()는 데이터는 있지만 현재 날짜가 없을 때)
+            // 2. default value 0으로 - insert
+            mRealm.beginTransaction();
+            UserVO user = mRealm.createObject(UserVO.class, getDate(new SimpleDateFormat("yyyy-MM-dd EEE", Locale.ENGLISH).format(Calendar.getInstance().getTime())));
+
+            user.setDate(new SimpleDateFormat("yyyy-MM-dd EEE", Locale.ENGLISH).format(Calendar.getInstance().getTime()));
+            user.setDistance(0);
+            user.setPercentage(0);
+            user.setSpeed(0);
+            user.setTimeSeconds(0);
+
+            mRealm.commitTransaction();
+        } else {
+            // 2. default value를 기준에 사용했던 데이터 불러와서 저장 - update
+        }
+
+        Log.d("### Test DB", ""+ mRealm.where(UserVO.class).findAll());
+    }
+
+    public long getDate(String date) {  // yyyy-MM-dd EEE
+        String[] d = date.split("-");
+        String id = d[0]+d[1]+d[2].split(" ")[0];
+        return Long.parseLong(id);
+    }
+
+    private long getTodayId() {
+        Number id = mRealm.where(UserVO.class).max("_id");
+        if(id == null)
+            return 0;
+        else
+            return id.longValue();
+    }
+
+    private long getToday() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.ENGLISH);
+
+        Calendar calendar = Calendar.getInstance();
+        return Long.parseLong(dateFormat.format(calendar.getTime()));
+    }
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -129,11 +166,10 @@ public class MainActivity extends BlunoLibrary {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 2 total pages.
 
-            // First : Friend Page
-            // Second : Main Page.
-            // Third : Data Page.
+            // First : Main Page.
+            // Second : Data Page.
             return 2;
         }
 
@@ -251,8 +287,6 @@ public class MainActivity extends BlunoLibrary {
         }
 
     }
-
-
 
 //    boolean exitFlag = false;
 //    @Override

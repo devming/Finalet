@@ -1,5 +1,6 @@
 package humaneer.org.wearablerunning;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import humaneer.org.wearablerunning.Model.UserVO;
+
 /**
  * Created by Minki on 2017-04-13.
  */
@@ -18,8 +21,16 @@ import java.util.List;
 public class DataRecyclerViewAdapter extends RecyclerView.Adapter<DataRecyclerViewAdapter.ViewHolder>{
 
 
-    List<MyItem> mItems = new ArrayList<MyItem>();;
+    private List<UserVO> mItems = new ArrayList<UserVO>();
+    private Context mContext;
+
+    public Context getContext() {return mContext;}
 //    OnItemClickListener mListener;
+
+    public DataRecyclerViewAdapter(Context context) {
+        super();
+        mContext = context;
+    }
 
     @Override
     public DataRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -32,8 +43,9 @@ public class DataRecyclerViewAdapter extends RecyclerView.Adapter<DataRecyclerVi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        int progress = (int)mItems.get(position).getPercentage();
         holder.weekdayTextView.setText(mItems.get(position).getDayOfWeek()+ "");
-        holder.progressBar.setProgress(mItems.get(position).getPercentage());
+        holder.progressBar.setProgress(progress);
         holder.percentageTextView.setText(mItems.get(position).getPercentage()+"");
 //        holder.setItemData(mItems.get(position));
 //        holder.setOnItemClickListener(mListener);
@@ -45,19 +57,17 @@ public class DataRecyclerViewAdapter extends RecyclerView.Adapter<DataRecyclerVi
     }
 
     public interface OnItemClickListener {
-        public void onItemClicked(ViewHolder holder, View view, MyItem data, int position);
+        public void onItemClicked(ViewHolder holder, View view, UserVO data, int position);
     }
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView percentageTextView;
         TextView weekdayTextView;
         ProgressBar progressBar;
-        MyItem mData;
+        UserVO mData;
         OnItemClickListener mItemClickListener;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            Log.d("### ViewHolder", "ViewHolder");
-
             weekdayTextView = (TextView) itemView.findViewById(R.id.weekdayTextView);
             progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
             percentageTextView = (TextView) itemView.findViewById(R.id.percentageTextView);
@@ -72,7 +82,7 @@ public class DataRecyclerViewAdapter extends RecyclerView.Adapter<DataRecyclerVi
 //            });
         }
 
-//        public void setItemData(MyItem data) {
+//        public void setItemData(UserVO data) {
 //            mData = data;
 //            weekdayTextView.setText(data.getDate());
 //            percentageTextView.setText(data.getPercentage());
@@ -83,7 +93,7 @@ public class DataRecyclerViewAdapter extends RecyclerView.Adapter<DataRecyclerVi
 //        }
     }
 
-    public void add(List<MyItem> items) {
+    public void add(List<UserVO> items) {
         mItems = items;
         notifyDataSetChanged();
     }

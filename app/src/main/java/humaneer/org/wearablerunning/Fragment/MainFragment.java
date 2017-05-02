@@ -22,6 +22,7 @@ import com.gun0912.tedpermission.TedPermission;
 import java.util.ArrayList;
 
 import humaneer.org.wearablerunning.Activity.MainActivity;
+import humaneer.org.wearablerunning.CustomPreferenceManager;
 import humaneer.org.wearablerunning.OnTextEventListener;
 import humaneer.org.wearablerunning.R;
 import humaneer.org.wearablerunning.Service.ServiceGPS;
@@ -190,6 +191,9 @@ public class MainFragment extends Fragment {
         } else {    // 아직 시작하지 않은 상태(Start를 누를 경우)
             // GPS 서비스 실행
 
+            if(!CustomPreferenceManager.isAlreadyRun(getContext())) {      // 저장된 값이 false : 처음 실행해서 start를 처음 누름
+                CustomPreferenceManager.setIsAlreadyRun(getContext(), true);    // 목표치 설정됨.
+            }
             buttonRunning.setImageResource(R.drawable.btn_stop);
             MainActivity.setLocationRunning(true);
             startServiceGPS();
@@ -252,4 +256,7 @@ public class MainFragment extends Fragment {
         intentFilter.addAction(ACTION_GPS_GOAL);
         return intentFilter;
     }
+
+
+
 }

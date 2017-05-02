@@ -2,10 +2,8 @@ package humaneer.org.wearablerunning.Fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManagerNonConfig;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,17 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import humaneer.org.wearablerunning.DataRecyclerViewAdapter;
 import humaneer.org.wearablerunning.Model.MainModel;
-import humaneer.org.wearablerunning.MyItem;
 import humaneer.org.wearablerunning.R;
 import humaneer.org.wearablerunning.databinding.FragmentDataBinding;
 
@@ -71,7 +62,7 @@ public class DataFragment extends Fragment {
         binding.recyclerViewDate.setLayoutManager(mLayoutManager);
 
         Log.d("### DataFragment", "onActivityCreated");
-        adapter = new DataRecyclerViewAdapter();
+        adapter = new DataRecyclerViewAdapter(getContext());
         Log.d("### adapter null", "");
 
         binding.recyclerViewDate.setAdapter(adapter);
@@ -90,6 +81,7 @@ public class DataFragment extends Fragment {
 
 
         adapter.add(mainModel.getDefaultDateData());
+//        adapter.add(mainModel.getDefaultDateData());
     }
 
     @Override
@@ -106,4 +98,5 @@ public class DataFragment extends Fragment {
 
         return view;
     }
+
 }

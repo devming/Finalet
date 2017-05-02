@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.util.ArrayList;
 
 import static humaneer.org.wearablerunning.Fragment.MainFragment.OnTextEventListenerObject;
@@ -20,7 +18,6 @@ public class ServiceGPS extends Service {
 
 //    GPSListener gpsListener;
 
-    ArrayList<LatLng> listLatLng;
     // 현재 GPS 사용유무
     boolean isGPSEnabled = false;
     // 네트워크 사용유무
@@ -70,6 +67,7 @@ public class ServiceGPS extends Service {
         Log.d("### GPS Service", "running");
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new GpsListener();
+
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_DISTANCE_CHANGE_FOR_UPDATES, MIN_TIME_BW_UPDATES, locationListener);
     }
 
@@ -105,9 +103,9 @@ public class ServiceGPS extends Service {
         public void onLocationChanged(Location location) {
             if (location != null) {
                 if(speed < 10)
-                    speed = Double.parseDouble(String.format("%.2f", location.getSpeed()));
+                    speed = Double.parseDouble(String.format("%.2f", location.getSpeed()*2.8));
                 else
-                    speed = Double.parseDouble(String.format("%.1f", location.getSpeed()));
+                    speed = Double.parseDouble(String.format("%.1f", location.getSpeed()*2.8));
 
                 OnTextEventListenerObject.onTextEvent(speed+"");
             }

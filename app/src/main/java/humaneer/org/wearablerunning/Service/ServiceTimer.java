@@ -23,8 +23,6 @@ public class ServiceTimer extends Service {
 
     private static int timerCount = 0;
 
-    private Context mContext;
-
     private int seconds = 0;
     private int minutes = 0;
     private int hours = 0;
@@ -49,8 +47,6 @@ public class ServiceTimer extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-
-        mContext = this;
 
         new Thread(new Runnable() {
 
@@ -85,6 +81,10 @@ public class ServiceTimer extends Service {
                     else
                         timeStr = hoursStr + ":" + minutesStr;
 
+                    if(timerCount % 10 == 0) {
+                        doNotification();
+                    }
+
                     if (MainFragment.OnTextEventListenerObject != null) {
                         //                    handler.sendEmptyMessage(1);
                         String percentage = String.format("%.2f", timerCount / 30.0);
@@ -92,7 +92,7 @@ public class ServiceTimer extends Service {
                             percentage = String.format("%.1f", timerCount / 30.0);
                         } else if(timerCount/30.0 == 100.0) {
                             percentage = String.format("%.0f", timerCount / 30.0);
-
+                            doNotification();
 
 //                            Intent notificationIntent = new Intent(mContext, MainActivity.class);
 //                            PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -111,25 +111,6 @@ public class ServiceTimer extends Service {
 //                            nm.notify(777, builder.build());
 
 
-                            NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
-                            builder.setContentTitle("Mission Complete! #Running 50 minutes")
-                                    .setContentText(ServiceTimer.getTimeStr())
-                                    .setSmallIcon(R.mipmap.ic_launcher)
-                                    .setAutoCancel(true)
-                                    .setWhen(System.currentTimeMillis())
-                                    .setDefaults(Notification.DEFAULT_ALL);
-
-                            Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
-
-                            TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
-                            stackBuilder.addParentStack(MainActivity.class);
-                            stackBuilder.addNextIntent(resultIntent);
-
-                            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                            builder.setContentIntent(resultPendingIntent);
-                            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                            notificationManager.notify(777, builder.build());
                         }
                         MainFragment.OnTextEventListenerObject.onTextEvent(timeStr,percentage);
                     }
@@ -138,6 +119,29 @@ public class ServiceTimer extends Service {
             }
         }).start();
         return START_NOT_STICKY;
+    }
+
+    private void doNotification() {
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(ServiceTimer.this);
+        builder.setContentTitle("Mission Complete! #Running 50 minutes")
+                .setContentText(ServiceTimer.getTimeStr())
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setAutoCancel(true)
+                .setWhen(System.currentTimeMillis())
+                .setDefaults(Notification.DEFAULT_ALL);
+
+        Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(ServiceTimer.this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        builder.setContentIntent(resultPendingIntent);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(777, builder.build());
     }
 
     @Override
@@ -149,10 +153,6 @@ public class ServiceTimer extends Service {
         hours = 0;
     }
 
-//    Context mContext;
-//    public void setContext(Context context) {
-//        mContext = context;
-//    }
     @Override
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("Not yet implemented");
