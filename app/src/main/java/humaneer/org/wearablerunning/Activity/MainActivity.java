@@ -56,8 +56,12 @@ public class MainActivity extends BlunoLibrary {
 
         setSupportActionBar(toolbar);
 
-        if(CustomPreferenceManager.isAlreadyRun(this))
+        if(CustomPreferenceManager.isAlreadyRun(this))  // 첫 실행 판단 - true이면 이전에 한번 수행한 적 있는것임.
             realmInit();
+        else {
+
+        }
+
 
         // View Pager
         ViewPager mViewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -111,6 +115,16 @@ public class MainActivity extends BlunoLibrary {
             mRealm.commitTransaction();
         } else {
             // 2. default value를 기준에 사용했던 데이터 불러와서 저장 - update
+            mRealm.beginTransaction();
+            UserVO user = mRealm.where(UserVO.class)
+                    .equalTo("_id", getDate(new SimpleDateFormat("yyyy-MM-dd EEE", Locale.ENGLISH).format(Calendar.getInstance().getTime())))
+                    .findFirst();
+
+            Log.d("### user id", user.get_Id() + "");
+            Log.d("### user distance", user.getDistance() + "");
+            Log.d("### user date", user.getDate() + "");
+            Log.d("### user percentage", user.getPercentage() + "");
+            mRealm.commitTransaction();
         }
 
         Log.d("### Test DB", ""+ mRealm.where(UserVO.class).findAll());

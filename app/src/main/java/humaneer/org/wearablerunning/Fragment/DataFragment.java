@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.github.mikephil.charting.data.LineData;
 
+import humaneer.org.wearablerunning.CustomPreferenceManager;
 import humaneer.org.wearablerunning.DataRecyclerViewAdapter;
 import humaneer.org.wearablerunning.Model.MainModel;
 import humaneer.org.wearablerunning.R;
@@ -67,21 +68,22 @@ public class DataFragment extends Fragment {
 
         binding.recyclerViewDate.setAdapter(adapter);
 
-        mainModel = new MainModel();
+        if(CustomPreferenceManager.isAlreadyRun(getContext())) {
+            mainModel = new MainModel();
 
 
-        LineData lineData1 = new LineData(mainModel.getDataSetCurrent());
-        binding.dataChart.setData(lineData1);
-        binding.dataChart.invalidate();
+            LineData lineData1 = new LineData(mainModel.getDataSetCurrent());
+            binding.dataChart.setData(lineData1);
+            binding.dataChart.invalidate();
 
 
-        LineData lineData2 = new LineData(mainModel.getDataSetGoal());
-        binding.dataChart.setData(lineData2);
-        binding.dataChart.invalidate();
+            LineData lineData2 = new LineData(mainModel.getDataSetGoal());
+            binding.dataChart.setData(lineData2);
+            binding.dataChart.invalidate();
 
 
-        adapter.add(mainModel.getDefaultDateData());
-//        adapter.add(mainModel.getDefaultDateData());
+            adapter.add(mainModel.getDefaultDateData());
+        }
     }
 
     @Override

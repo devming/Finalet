@@ -55,9 +55,9 @@ public class MainModel {
         dataSetGoal.setColor(R.color.colorAccent);
         dataSetGoal.setValueTextColor(R.color.colorAccent);
 
-        dataSetCurrent = new LineDataSet(entries, "My Status");
-        dataSetCurrent.setColor(R.color.colorPrimary);
-        dataSetCurrent.setValueTextColor(R.color.colorPrimary);
+//        dataSetCurrent = new LineDataSet(entries, "My Status");
+//        dataSetCurrent.setColor(R.color.colorPrimary);
+//        dataSetCurrent.setValueTextColor(R.color.colorPrimary);
     }
 
     public LineDataSet getDataSetGoal() {
@@ -77,7 +77,6 @@ public class MainModel {
     private void setDefaultDateData() {
         items = new ArrayList<UserVO>();
 
-        //TODO: Recycler View에 띄워줄 list에 넣기..
         ListIterator<UserVO> list = userInfo.listIterator();
 
         while(list.hasNext())

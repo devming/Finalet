@@ -3,6 +3,8 @@ package humaneer.org.wearablerunning;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import humaneer.org.wearablerunning.Model.UserVO;
+
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -21,6 +23,30 @@ public class CustomPreferenceManager {
         SharedPreferences pref = context.getSharedPreferences("isfirst", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean("isfirst", first);
-        editor.commit();
+        editor.apply();
+    }
+
+    public static void setGoal(Context context, long id, double percentage, int dayCount) {
+
+        // id값 - 날짜
+        SharedPreferences prefId = context.getSharedPreferences(UserVO.ID, MODE_PRIVATE);
+        SharedPreferences.Editor editorId = prefId.edit();
+        editorId.putLong(UserVO.PERCENTAGE, id);
+        editorId.apply();
+
+        // percentage
+        SharedPreferences prefPercentage = context.getSharedPreferences(UserVO.PERCENTAGE, MODE_PRIVATE);
+        SharedPreferences.Editor editorPercentage = prefPercentage.edit();
+        editorPercentage.putFloat(UserVO.PERCENTAGE, (float)percentage);
+        editorPercentage.apply();
+
+
+        SharedPreferences prefDayCount= context.getSharedPreferences("daycount", MODE_PRIVATE);
+        SharedPreferences.Editor editorDayCount= prefDayCount.edit();
+        editorDayCount.putInt("daycount", dayCount);
+        editorDayCount.apply();
+
+        // f(x) = ax^2 + p;
+        // TODO: a를 저장해야해. preference에
     }
 }
