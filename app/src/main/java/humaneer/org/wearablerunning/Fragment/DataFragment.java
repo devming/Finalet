@@ -11,11 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.LineData;
 
 import humaneer.org.wearablerunning.CustomPreferenceManager;
 import humaneer.org.wearablerunning.DataRecyclerViewAdapter;
 import humaneer.org.wearablerunning.Model.MainModel;
+import humaneer.org.wearablerunning.MyXAxisValueFormatter;
 import humaneer.org.wearablerunning.R;
 import humaneer.org.wearablerunning.databinding.FragmentDataBinding;
 
@@ -38,8 +41,6 @@ public class DataFragment extends Fragment {
 
     public static DataFragment newInstance() {
         DataFragment fragment = new DataFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -72,13 +73,33 @@ public class DataFragment extends Fragment {
             mainModel = new MainModel();
 
 
-            LineData lineData1 = new LineData(mainModel.getDataSetCurrent());
-            binding.dataChart.setData(lineData1);
-            binding.dataChart.invalidate();
+//            LineData lineData1 = new LineData(mainModel.getDataSetCurrent());
+//            binding.dataChart.setData(lineData1);
+//            binding.dataChart.invalidate();
 
+            LineData lineData = new LineData( mainModel.getDataSetGoal());
+//            LineData lineData = new LineData( mainModel.getDataSetCurrent());
 
-            LineData lineData2 = new LineData(mainModel.getDataSetGoal());
-            binding.dataChart.setData(lineData2);
+            final String[] strings={ "Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
+            MyXAxisValueFormatter myXAxisValueFormatter = new MyXAxisValueFormatter() {
+                @Override
+                public String getFormattedValue(float value, AxisBase axis) {
+
+                    return strings[(int)value];
+//                    return mainModel.getUserInfo().get((int) value).get_Id()+"";
+                }
+            };
+
+            XAxis xAxis = binding.dataChart.getXAxis();
+//            String []str = mainModel.getLabels();
+//            xAxis.setValueFormatter(new MyXAxisValueFormatter(str));
+
+            xAxis.setValueFormatter(myXAxisValueFormatter);
+
+            binding.dataChart.setData(lineData);
+            binding.dataChart.setDoubleTapToZoomEnabled(false);
+            binding.dataChart.setScaleEnabled(false);
+            binding.dataChart.setPinchZoom(false);
             binding.dataChart.invalidate();
 
 
