@@ -4,16 +4,13 @@ import android.util.Log;
 
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Locale;
 
 import humaneer.org.wearablerunning.Activity.MainActivity;
-import humaneer.org.wearablerunning.R;
 import io.realm.RealmResults;
 
 /**
@@ -22,43 +19,78 @@ import io.realm.RealmResults;
 
 public class MainModel {
 
-    LineDataSet dataSetGoal;
-    LineDataSet dataSetCurrent;
-    List<UserVO> items;
+//    private ArrayList<String> labels;
+    private LineDataSet dataSetGoal;
+    private LineDataSet dataSetCurrent;
+    private List<UserVO> items;
+
+    public static final int INITIAL_VALUE = 100;
 
     public MainModel() {
 
-        setDefaultChartData();
+//        setDataGoal();
+        setDataCurrent();
         setDefaultDateData();
     }
 
     RealmResults<UserVO> userInfo = getUserInfo();
+    RealmResults<UserVO> userTargetInfo = getTartget();
 
     public RealmResults<UserVO> getUserInfo() {
         return MainActivity.GetRealmObject().where(UserVO.class).findAll();
     }
 
-    private void setDefaultChartData() {
+    public RealmResults<UserVO> getTartget() {
+        return MainActivity.GetRealmObject().where(UserVO.class).equalTo("_id", INITIAL_VALUE).findAll();
+    }
 
-        float []dataObjects = new float[3];
-        dataObjects[0] = 1.5f;
-        dataObjects[1] = 3.3f;
-        dataObjects[2] = 2.6f;
+    private void setDataGoal() {
 
+        // X축 라벨 추가
+//       labels = new ArrayList<String>();
+//       for (int i=0;i<userInfo.size();i++)  // 0:  시작점
+//            labels.add(i+"");
 
         List<Entry> entries = new ArrayList<Entry>();
-        for(float data : dataObjects) {
-            entries.add(new Entry(data, data));
+        int idx = 0;
+        for(UserVO data : userTargetInfo) {
+            entries.add(new Entry(idx++, (float)data.getPercentage()));
+        }
+//        RealmLineDataSet<UserVO> set = new RealmLineDataSet<UserVO>(userInfo, "xValue", "yValue");
+        dataSetGoal = new LineDataSet(entries, "Goal");
+        dataSetGoal.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
+//        dataSetGoal.setLabel("Goal");
+        dataSetGoal.setDrawValues(false);
+
+        dataSetGoal.setDrawCircleHole(false);
+        dataSetGoal.setColor(ColorTemplate.rgb("#FF5722"));
+        dataSetGoal.setCircleColor(ColorTemplate.rgb("#FF5722"));
+        dataSetGoal.setLineWidth(1.8f);
+        dataSetGoal.setCircleRadius(3.6f);
+
+    }
+
+    private void setDataCurrent() {
+
+        List<Entry> entries = new ArrayList<Entry>();
+        int idx = 0;
+        for(UserVO data : userInfo) {
+            entries.add(new Entry(idx++, (float)data.getPercentage()));
         }
 
-        dataSetGoal = new LineDataSet(entries, "Goal");
-        dataSetGoal.setColor(R.color.colorAccent);
-        dataSetGoal.setValueTextColor(R.color.colorAccent);
+        dataSetCurrent = new LineDataSet(entries, "Current");
+        dataSetCurrent.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
+//        dataSetGoal.setLabel("Goal");
+        dataSetCurrent.setDrawValues(false);
 
-//        dataSetCurrent = new LineDataSet(entries, "My Status");
-//        dataSetCurrent.setColor(R.color.colorPrimary);
-//        dataSetCurrent.setValueTextColor(R.color.colorPrimary);
+        dataSetCurrent.setDrawCircleHole(false);
+        dataSetCurrent.setColor(ColorTemplate.rgb("#2257FF"));
+        dataSetCurrent.setCircleColor(ColorTemplate.rgb("#2257FF"));
+        dataSetCurrent.setLineWidth(1.8f);
+        dataSetCurrent.setCircleRadius(3.6f);
     }
+
+
 
     public LineDataSet getDataSetGoal() {
 
@@ -79,94 +111,18 @@ public class MainModel {
 
         ListIterator<UserVO> list = userInfo.listIterator();
 
-        while(list.hasNext())
-            items.add(list.next());
-//        items.add(userInfo);
+        Log.d("### AAAAAAA ", "null !!");
+        while(list.hasNext()) {
 
-//        setDateList();
+            UserVO temp = list.next();
+            if(temp == null)
+                Log.d("### items:", "null !!");
+            else
+                Log.d("### items:", temp.get_Id()+"");
 
-//        switch (Calendar.getInstance().DAY_OF_WEEK){
-//            case Calendar.MONDAY: // MON
-//                setDateList(0);
-//                break;
-//            case Calendar.TUESDAY: // TUE
-//                setDateList(1);
-//                break;
-//            case Calendar.WEDNESDAY: // WED
-//                setDateList(2);
-//                break;
-//            case Calendar.THURSDAY: // THU
-//                setDateList(3);
-//                break;
-//            case Calendar.FRIDAY: // FRI
-//                setDateList(4);
-//                break;
-//            case Calendar.SATURDAY: // SAT
-//                setDateList(5);
-//                break;
-//            case Calendar.SUNDAY: // SUN
-//                setDateList(6);
-//                break;
-//        }
-
-
-//        // TODO: DB에서 날짜 데이터 불러오기
-//        items = new ArrayList<UserVO>();
-//        UserVO itemData = new UserVO();
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-EEE", Locale.ENGLISH);
-//        itemData.setDate(dateFormat.format(new Date()));
-//        items.add(itemData);
-//
-//        dateFormat = new SimpleDateFormat("yyyy-MM-dd-EEE", Locale.ENGLISH);
-//        itemData.setDate(dateFormat.format(new Date()));
-//        items.add(itemData);
-//
-//        dateFormat = new SimpleDateFormat("yyyy-MM-dd-EEE", Locale.ENGLISH);
-//        itemData.setDate(dateFormat.format(new Date()));
-//        items.add(itemData);
-//
-//        dateFormat = new SimpleDateFormat("yyyy-MM-dd-EEE", Locale.ENGLISH);
-//        itemData.setDate(dateFormat.format(new Date()));
-//        items.add(itemData);
-//
-//        dateFormat = new SimpleDateFormat("yyyy-MM-dd-EEE", Locale.ENGLISH);
-//        itemData.setDate(dateFormat.format(new Date()));
-//        items.add(itemData);
-    }
-
-    private void setDateList() {
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd EEE", Locale.ENGLISH);
-
-        Calendar calendar = Calendar.getInstance();
-        int weekNum = calendar.getFirstDayOfWeek();
-
-        Log.d("### TODAY", weekNum+"");
-
-        UserVO itemData;
-        itemData = new UserVO();
-        calendar.add(Calendar.DATE, weekNum);
-        itemData.setDate(dateFormat.format(calendar.getTime()));
-        items.add(itemData);
-
-    }
-
-    private void setDateList1() {
-
-        UserVO itemData;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd EEE", Locale.ENGLISH);
-
-        for(int i=3;i<10;i++) {
-            int weekNum = i;
-            if(i == 9)
-                weekNum = 2;
-            itemData = new UserVO();
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DATE, weekNum);
-            itemData.setDate(dateFormat.format(calendar.getTime()));
-
-            items.add(itemData);
+            items.add(temp);
         }
+        Log.d("### BBBBBBB ", "null !!");
     }
 
 }

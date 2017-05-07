@@ -19,10 +19,15 @@ import android.widget.TextView;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 import humaneer.org.wearablerunning.Activity.MainActivity;
 import humaneer.org.wearablerunning.CustomPreferenceManager;
+import humaneer.org.wearablerunning.Model.MainModel;
+import humaneer.org.wearablerunning.Model.UserVO;
 import humaneer.org.wearablerunning.OnTextEventListener;
 import humaneer.org.wearablerunning.R;
 import humaneer.org.wearablerunning.Service.ServiceGPS;
@@ -188,6 +193,13 @@ public class MainFragment extends Fragment {
             MainActivity.setLocationRunning(false);
             stopServiceGPS();
             stopServiceTimer();
+
+            if(CustomPreferenceManager.isAlreadyRun(getContext())) {// 첫 실행 판단 - true이면 이전에 한번 수행한 적 있는것임.
+                updateData();
+            }
+            else {
+                setInitialData();
+            }
         } else {    // 아직 시작하지 않은 상태(Start를 누를 경우)
             // GPS 서비스 실행
 
@@ -201,6 +213,62 @@ public class MainFragment extends Fragment {
         }
         // button 애니메이션 실행
         buttonRunning.startAnimation(anim);
+    }
+
+    private void setInitialData() {
+        double percentage = Double.parseDouble(ServiceTimer.getPercentage());    //p
+        double count = 36; // max n
+
+
+        if(percentage >= 0 && percentage <= 10 ) {
+
+        } else if(percentage > 10 && percentage <= 20 ) {
+            count -= 6;
+        } else if(percentage > 20 && percentage <= 30 ) {
+            count -= 12;
+        } else if(percentage > 30 && percentage <= 40 ) {
+            count -= 18;
+        } else if(percentage > 40 && percentage <= 50 ) {
+            count -= 24;
+        } else {
+            count -= 36;
+        }
+        double a = (50-percentage)/Math.pow(count, 2);
+
+        for(int i=0;i<count;i++) {  // i == n (x)
+
+            MainActivity.GetRealmObject().beginTransaction();
+            UserVO user = MainActivity.GetRealmObject().createObject(UserVO.class, MainModel.INITIAL_VALUE);
+
+            user.setDate(new SimpleDateFormat("yyyy-MM-dd EEE", Locale.ENGLISH).format(Calendar.getInstance().getTime()));
+            user.setDistance(ServiceGPS.getDistance());
+            user.setPercentage(a * Math.pow((double)i, 2) + percentage);
+            user.setSpeed(ServiceGPS.getSpeed());
+            user.setTimeSeconds(ServiceTimer.getTimerCount());
+
+            MainActivity.GetRealmObject().commitTransaction();
+        }
+    }
+
+    private void updateData() {
+
+        UserVO toEdit = MainActivity.GetRealmObject().where(UserVO.class)
+                .equalTo("_id", Long.parseLong(getDate(new SimpleDateFormat("yyyy-MM-dd EEE", Locale.ENGLISH).format(Calendar.getInstance().getTime()))))
+                .findFirst();
+
+        if(toEdit.getPercentage() < Double.parseDouble(ServiceTimer.getPercentage())) { // 현재 운동한 시간이 오늘 기존의 시간보다 더 클때만 저장
+
+            MainActivity.GetRealmObject().beginTransaction();
+            toEdit.setSpeed(ServiceGPS.getSpeed());
+            toEdit.setTimeSeconds(ServiceTimer.getTimerCount());
+            toEdit.setPercentage(Double.parseDouble(ServiceTimer.getPercentage()));
+            MainActivity.GetRealmObject().commitTransaction();
+        }
+    }
+
+    public String getDate(String date) {  // yyyy-MM-dd EEE
+        String[] d = date.split("-");
+        return d[0]+d[1]+d[2].split(" ")[0];
     }
 
 //    FinishRunning finishRunning = new FinishRunning();

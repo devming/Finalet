@@ -77,7 +77,7 @@ public class DataFragment extends Fragment {
 //            binding.dataChart.setData(lineData1);
 //            binding.dataChart.invalidate();
 
-            LineData lineData = new LineData( mainModel.getDataSetGoal());
+            LineData lineData = new LineData( mainModel.getDataSetCurrent());
 //            LineData lineData = new LineData( mainModel.getDataSetCurrent());
 
             final String[] strings={ "Mon","Tue","Wed","Thu","Fri","Sat","Sun"};

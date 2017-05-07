@@ -21,6 +21,11 @@ public class ServiceTimer extends Service {
         return timerCount;
     }
 
+    public static String getPercentage() {
+        return percentage;
+    }
+
+    private static String percentage;
     private static int timerCount = 0;
 
     private int seconds = 0;
@@ -81,13 +86,9 @@ public class ServiceTimer extends Service {
                     else
                         timeStr = hoursStr + ":" + minutesStr;
 
-                    if(timerCount % 10 == 0) {
-                        doNotification();
-                    }
-
                     if (MainFragment.OnTextEventListenerObject != null) {
                         //                    handler.sendEmptyMessage(1);
-                        String percentage = String.format("%.2f", timerCount / 30.0);
+                        percentage = String.format("%.2f", timerCount / 30.0);
                         if(timerCount/30.0 >=10.0) {
                             percentage = String.format("%.1f", timerCount / 30.0);
                         } else if(timerCount/30.0 == 100.0) {

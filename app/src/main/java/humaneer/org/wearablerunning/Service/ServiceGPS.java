@@ -1,5 +1,6 @@
 package humaneer.org.wearablerunning.Service;
 
+import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,9 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 
 import java.util.ArrayList;
 
@@ -68,7 +72,22 @@ public class ServiceGPS extends Service {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new GpsListener();
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_DISTANCE_CHANGE_FOR_UPDATES, MIN_TIME_BW_UPDATES, locationListener);
+        PermissionListener permissionListener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_DISTANCE_CHANGE_FOR_UPDATES, MIN_TIME_BW_UPDATES, locationListener);
+            }
+
+            @Override
+            public void onPermissionDenied(ArrayList<String> arrayList) {
+            }
+        };
+
+        new TedPermission(ServiceGPS.this)
+                .setPermissionListener(permissionListener)
+                .setDeniedMessage("GPS를 동작시키세요.")
+                .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+                .check();
     }
 
     @Override

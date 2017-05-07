@@ -20,7 +20,6 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import humaneer.org.wearablerunning.BLE.BlunoLibrary;
-import humaneer.org.wearablerunning.CustomPreferenceManager;
 import humaneer.org.wearablerunning.Fragment.DataFragment;
 import humaneer.org.wearablerunning.Fragment.MainFragment;
 import humaneer.org.wearablerunning.Model.UserVO;
@@ -35,6 +34,8 @@ public class MainActivity extends BlunoLibrary {
 
     private EditText serialSendText;
 
+    private boolean isGoalMode = false;
+
     private static boolean isLocationRunning = false;   // GPS 서비스 시작했는지 안했는지.(=버튼이 눌렸는지 안눌렸는지)
     public static boolean isLocationRunning() {
         return isLocationRunning;
@@ -42,7 +43,12 @@ public class MainActivity extends BlunoLibrary {
     public static void setLocationRunning(boolean locationRunning) { isLocationRunning = locationRunning; }
 
     private static Realm mRealm;
-    public static Realm GetRealmObject() {return mRealm;}
+    public static Realm GetRealmObject() {
+        if(mRealm == null){
+            mRealm = Realm.getDefaultInstance();
+        }
+        return mRealm;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +61,14 @@ public class MainActivity extends BlunoLibrary {
         imageViewUser.setImageResource(R.drawable.profile_icon);
 
         setSupportActionBar(toolbar);
+        Realm.init(this);
 
-        if(CustomPreferenceManager.isAlreadyRun(this))  // 첫 실행 판단 - true이면 이전에 한번 수행한 적 있는것임.
+//        if(CustomPreferenceManager.isAlreadyRun(this)) {// 첫 실행 판단 - true이면 이전에 한번 수행한 적 있는것임.
             realmInit();
-        else {
-
-        }
+//        }
+//        else {
+//
+//        }
 
 
         // View Pager
@@ -91,14 +99,12 @@ public class MainActivity extends BlunoLibrary {
 
     public void realmInit() {
 
-        Realm.init(this);
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name("finalet.realm")
                 .schemaVersion(42)
                 .build();
         mRealm = Realm.getInstance(config);
 
-        // TODO: 앱 실행시 User Info 초기화
         // 1. Today 확인
         long id = getTodayId();
         if(id == 0 || id != getToday()) {   // id값이 없으면.(0일경우는 아예 데이터 자체가 없을 때, id != getToday()는 데이터는 있지만 현재 날짜가 없을 때)
@@ -113,6 +119,8 @@ public class MainActivity extends BlunoLibrary {
             user.setTimeSeconds(0);
 
             mRealm.commitTransaction();
+
+            Log.d("### id == 0", "여긴가");
         } else {
             // 2. default value를 기준에 사용했던 데이터 불러와서 저장 - update
             mRealm.beginTransaction();
@@ -201,6 +209,13 @@ public class MainActivity extends BlunoLibrary {
         switch(item.getItemId()) {
             case R.id.ble_setting:
                 buttonScanOnClickProcess();
+                return true;
+            case R.id.delete_db:
+                deleteData();
+                return true;
+            case R.id.init_goal:
+                isGoalMode = true;
+//                initializeGoal();
                 return true;
             default:
                 return false;
@@ -300,6 +315,12 @@ public class MainActivity extends BlunoLibrary {
                 return "f";
         }
 
+    }
+
+    private void deleteData() {
+        mRealm.beginTransaction();
+        mRealm.deleteAll();
+        mRealm.commitTransaction();
     }
 
 //    boolean exitFlag = false;
