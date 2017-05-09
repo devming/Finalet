@@ -44,6 +44,8 @@ public class MainActivity extends BlunoLibrary {
     public static void setLocationRunning(boolean locationRunning) { isLocationRunning = locationRunning; }
 
     private static Realm mRealm;
+    public static RealmConfiguration Config;
+
     public static Realm GetRealmObject() {
         if(mRealm == null){
             mRealm = Realm.getDefaultInstance();
@@ -64,6 +66,10 @@ public class MainActivity extends BlunoLibrary {
         setSupportActionBar(toolbar);
         Realm.init(this);
 
+        Config = new RealmConfiguration.Builder()
+                .name("finalet.realm")
+                .schemaVersion(42)
+                .build();
 //        if(CustomPreferenceManager.isAlreadyRun(this)) {// 첫 실행 판단 - true이면 이전에 한번 수행한 적 있는것임.
             realmInit();
 //        }
@@ -100,11 +106,7 @@ public class MainActivity extends BlunoLibrary {
 
     public void realmInit() {
 
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .name("finalet.realm")
-                .schemaVersion(42)
-                .build();
-        mRealm = Realm.getInstance(config);
+        mRealm = Realm.getInstance(Config);
 
         // 1. Today 확인
         long id = getTodayId();

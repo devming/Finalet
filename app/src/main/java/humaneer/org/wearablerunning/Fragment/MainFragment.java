@@ -32,6 +32,7 @@ import humaneer.org.wearablerunning.OnTextEventListener;
 import humaneer.org.wearablerunning.R;
 import humaneer.org.wearablerunning.Service.ServiceGPS;
 import humaneer.org.wearablerunning.Service.ServiceTimer;
+import io.realm.Realm;
 
 
 public class MainFragment extends Fragment {
@@ -193,7 +194,7 @@ public class MainFragment extends Fragment {
             MainActivity.setLocationRunning(false);
             stopServiceGPS();
             stopServiceTimer();
-//TODO:
+
             if(MainActivity.getIsGoalMode()) {// 첫 실행 판단 - Goal setting mode 일경우
                 setInitialData();
             }
@@ -237,8 +238,8 @@ public class MainFragment extends Fragment {
 
         for(int i=0;i<count;i++) {  // i == n (x)
 
-            MainActivity.GetRealmObject().beginTransaction();
-            UserVO user = MainActivity.GetRealmObject().createObject(UserVO.class, MainModel.INITIAL_VALUE + i);
+            Realm.getInstance(MainActivity.Config).beginTransaction();
+            UserVO user = Realm.getInstance(MainActivity.Config).createObject(UserVO.class, MainModel.INITIAL_VALUE + i);
 
             user.setDate(new SimpleDateFormat("yyyy-MM-dd EEE", Locale.ENGLISH).format(Calendar.getInstance().getTime()));
             user.setDistance(ServiceGPS.getDistance());
@@ -246,7 +247,7 @@ public class MainFragment extends Fragment {
             user.setSpeed(ServiceGPS.getSpeed());
             user.setTimeSeconds(ServiceTimer.getTimerCount());
 
-            MainActivity.GetRealmObject().commitTransaction();
+            Realm.getInstance(MainActivity.Config).commitTransaction();
         }
 
         CustomPreferenceManager.setDayCount(getContext(), (int)count);
@@ -254,17 +255,17 @@ public class MainFragment extends Fragment {
 
     private void updateData() {
 
-        UserVO toEdit = MainActivity.GetRealmObject().where(UserVO.class)
+        UserVO toEdit = Realm.getInstance(MainActivity.Config).where(UserVO.class)
                 .equalTo("_id", Long.parseLong(getDate(new SimpleDateFormat("yyyy-MM-dd EEE", Locale.ENGLISH).format(Calendar.getInstance().getTime()))))
                 .findFirst();
 
         if(toEdit.getPercentage() < Double.parseDouble(ServiceTimer.getPercentage())) { // 현재 운동한 시간이 오늘 기존의 시간보다 더 클때만 저장
 
-            MainActivity.GetRealmObject().beginTransaction();
+            Realm.getInstance(MainActivity.Config).beginTransaction();
             toEdit.setSpeed(ServiceGPS.getSpeed());
             toEdit.setTimeSeconds(ServiceTimer.getTimerCount());
             toEdit.setPercentage(Double.parseDouble(ServiceTimer.getPercentage()));
-            MainActivity.GetRealmObject().commitTransaction();
+            Realm.getInstance(MainActivity.Config).commitTransaction();
         }
     }
 
@@ -292,10 +293,6 @@ public class MainFragment extends Fragment {
 //    ServiceTimer serviceTimer;
 
     public void startServiceTimer() {
-
-        // Tiemr 서비스 실행
-//        serviceTimer = new ServiceTimer();
-//        serviceTimer.setContext(getContext());
 
         Intent intent = new Intent(fragment.getContext(), ServiceTimer.class);
         getActivity().startService(intent);

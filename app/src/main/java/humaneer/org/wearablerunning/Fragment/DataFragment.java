@@ -24,6 +24,8 @@ import humaneer.org.wearablerunning.MyXAxisValueFormatter;
 import humaneer.org.wearablerunning.R;
 import humaneer.org.wearablerunning.databinding.FragmentDataBinding;
 
+import static android.content.ContentValues.TAG;
+
 public class DataFragment extends Fragment {
 
     private FragmentDataBinding binding;
@@ -60,9 +62,7 @@ public class DataFragment extends Fragment {
         // RecyclerView에 LayoutManager 할당
         binding.recyclerViewDate.setLayoutManager(mLayoutManager);
 
-        Log.d("### DataFragment", "onActivityCreated");
         adapter = new DataRecyclerViewAdapter(getContext());
-        Log.d("### adapter null", "");
 
         binding.recyclerViewDate.setAdapter(adapter);
 
@@ -115,10 +115,12 @@ public class DataFragment extends Fragment {
         for(int i=1;i<=dayCount;i++){
             strings.add(i+"");
         }
+        Log.d(TAG, "### dayCount: "+ dayCount);
         MyXAxisValueFormatter myXAxisValueFormatter = new MyXAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
 
+                Log.d(TAG, "### value: "+ value);
                 return strings.get((int)value);
 //                    return mainModel.getUserInfo().get((int) value).get_Id()+"";
             }

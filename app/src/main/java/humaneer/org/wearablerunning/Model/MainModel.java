@@ -1,5 +1,7 @@
 package humaneer.org.wearablerunning.Model;
 
+import android.util.Log;
+
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -11,7 +13,10 @@ import java.util.List;
 import java.util.ListIterator;
 
 import humaneer.org.wearablerunning.Activity.MainActivity;
+import io.realm.Realm;
 import io.realm.RealmResults;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Minki on 2017-04-25.
@@ -32,10 +37,14 @@ public class MainModel {
 
         dataSets = new ArrayList<>();
 
-        if(getTartget() != null)
+        if(getTartget() != null) {
+            Log.d(TAG, "### getTartget() in MainModel Constructor.");
             setDataGoal();
-        if(getUserInfo() != null)
+        }
+        if(getUserInfo() != null) {
+            Log.d(TAG, "### getUserInfo() in MainModel Constructor.");
             setDataCurrent();
+        }
 
 //        setUserInfoData();
     }
@@ -44,11 +53,11 @@ public class MainModel {
 //    RealmResults<UserVO> getTartget() = getTartget();
 
     public RealmResults<UserVO> getUserInfo() {
-        return MainActivity.GetRealmObject().where(UserVO.class).greaterThan("_id", 10000).findAll();
+        return Realm.getInstance(MainActivity.Config).where(UserVO.class).greaterThan("_id", 10000).findAll();
     }
 
     public RealmResults<UserVO> getTartget() {
-        return MainActivity.GetRealmObject().where(UserVO.class).between("_id", INITIAL_VALUE, 10000).findAll();
+        return Realm.getInstance(MainActivity.Config).where(UserVO.class).between("_id", INITIAL_VALUE, 10000).findAll();
     }
 
     private void setDataGoal() {
