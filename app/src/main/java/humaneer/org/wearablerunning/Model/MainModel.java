@@ -1,9 +1,9 @@
 package humaneer.org.wearablerunning.Model;
 
-import android.util.Log;
-
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
@@ -24,24 +24,31 @@ public class MainModel {
     private LineDataSet dataSetCurrent;
     private List<UserVO> items;
 
-    public static final int INITIAL_VALUE = 100;
+    private ArrayList<ILineDataSet> dataSets;
+
+    public static final int INITIAL_VALUE = 1;
 
     public MainModel() {
 
-//        setDataGoal();
-        setDataCurrent();
-        setDefaultDateData();
+        dataSets = new ArrayList<>();
+
+        if(getTartget() != null)
+            setDataGoal();
+        if(getUserInfo() != null)
+            setDataCurrent();
+
+//        setUserInfoData();
     }
 
-    RealmResults<UserVO> userInfo = getUserInfo();
-    RealmResults<UserVO> userTargetInfo = getTartget();
+//    RealmResults<UserVO> getUserInfo() = getUserInfo();
+//    RealmResults<UserVO> getTartget() = getTartget();
 
     public RealmResults<UserVO> getUserInfo() {
-        return MainActivity.GetRealmObject().where(UserVO.class).findAll();
+        return MainActivity.GetRealmObject().where(UserVO.class).greaterThan("_id", 10000).findAll();
     }
 
     public RealmResults<UserVO> getTartget() {
-        return MainActivity.GetRealmObject().where(UserVO.class).equalTo("_id", INITIAL_VALUE).findAll();
+        return MainActivity.GetRealmObject().where(UserVO.class).between("_id", INITIAL_VALUE, 10000).findAll();
     }
 
     private void setDataGoal() {
@@ -53,12 +60,12 @@ public class MainModel {
 
         List<Entry> entries = new ArrayList<Entry>();
         int idx = 0;
-        for(UserVO data : userTargetInfo) {
+        for(UserVO data : getTartget()) {
             entries.add(new Entry(idx++, (float)data.getPercentage()));
         }
 //        RealmLineDataSet<UserVO> set = new RealmLineDataSet<UserVO>(userInfo, "xValue", "yValue");
         dataSetGoal = new LineDataSet(entries, "Goal");
-        dataSetGoal.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
+        dataSetGoal.setMode(LineDataSet.Mode.LINEAR);
 //        dataSetGoal.setLabel("Goal");
         dataSetGoal.setDrawValues(false);
 
@@ -66,15 +73,15 @@ public class MainModel {
         dataSetGoal.setColor(ColorTemplate.rgb("#FF5722"));
         dataSetGoal.setCircleColor(ColorTemplate.rgb("#FF5722"));
         dataSetGoal.setLineWidth(1.8f);
-        dataSetGoal.setCircleRadius(3.6f);
-
+        dataSetGoal.setCircleRadius(1.5f);
+        dataSets.add(dataSetGoal);
     }
 
     private void setDataCurrent() {
 
         List<Entry> entries = new ArrayList<Entry>();
         int idx = 0;
-        for(UserVO data : userInfo) {
+        for(UserVO data : getUserInfo()) {
             entries.add(new Entry(idx++, (float)data.getPercentage()));
         }
 
@@ -87,7 +94,8 @@ public class MainModel {
         dataSetCurrent.setColor(ColorTemplate.rgb("#2257FF"));
         dataSetCurrent.setCircleColor(ColorTemplate.rgb("#2257FF"));
         dataSetCurrent.setLineWidth(1.8f);
-        dataSetCurrent.setCircleRadius(3.6f);
+        dataSetCurrent.setCircleRadius(1.5f);
+        dataSets.add(dataSetCurrent);
     }
 
 
@@ -102,27 +110,36 @@ public class MainModel {
         return dataSetCurrent;
     }
 
+    public LineData getLineDataSets() {
+        return new LineData(dataSets);
+    }
+
     public List<UserVO> getDefaultDateData() {
         return items;
     }
 
-    private void setDefaultDateData() {
+    public void setUserInfoData() {
         items = new ArrayList<UserVO>();
 
-        ListIterator<UserVO> list = userInfo.listIterator();
+        ListIterator<UserVO> list = getUserInfo().listIterator();
 
-        Log.d("### AAAAAAA ", "null !!");
         while(list.hasNext()) {
 
             UserVO temp = list.next();
-            if(temp == null)
-                Log.d("### items:", "null !!");
-            else
-                Log.d("### items:", temp.get_Id()+"");
-
             items.add(temp);
         }
-        Log.d("### BBBBBBB ", "null !!");
     }
 
+
+    public void setTargetUserInfoData() {
+        items = new ArrayList<UserVO>();
+
+        ListIterator<UserVO> list = getTartget().listIterator();
+
+        while(list.hasNext()) {
+
+            UserVO temp = list.next();
+            items.add(temp);
+        }
+    }
 }

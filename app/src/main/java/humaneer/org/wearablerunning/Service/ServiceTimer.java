@@ -89,9 +89,9 @@ public class ServiceTimer extends Service {
                     if (MainFragment.OnTextEventListenerObject != null) {
                         //                    handler.sendEmptyMessage(1);
                         percentage = String.format("%.2f", timerCount / 30.0);
-                        if(timerCount/30.0 >=10.0) {
+                        if(timerCount >= 600) {
                             percentage = String.format("%.1f", timerCount / 30.0);
-                        } else if(timerCount/30.0 == 100.0) {
+                        } else if(timerCount >= 3000) {
                             percentage = String.format("%.0f", timerCount / 30.0);
                             doNotification();
 
@@ -116,6 +116,8 @@ public class ServiceTimer extends Service {
                         MainFragment.OnTextEventListenerObject.onTextEvent(timeStr,percentage);
                     }
                     timerCount++;
+                    if(timerCount > 3000)
+                        timerCount = 3000;
                 }
             }
         }).start();
@@ -143,6 +145,9 @@ public class ServiceTimer extends Service {
         builder.setContentIntent(resultPendingIntent);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(777, builder.build());
+
+        // 루프 빠져나오게.
+        MainActivity.setLocationRunning(false);
     }
 
     @Override

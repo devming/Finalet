@@ -34,7 +34,8 @@ public class MainActivity extends BlunoLibrary {
 
     private EditText serialSendText;
 
-    private boolean isGoalMode = false;
+    private static boolean isGoalMode = false;
+    public static boolean getIsGoalMode() {return isGoalMode;}
 
     private static boolean isLocationRunning = false;   // GPS 서비스 시작했는지 안했는지.(=버튼이 눌렸는지 안눌렸는지)
     public static boolean isLocationRunning() {
@@ -214,7 +215,11 @@ public class MainActivity extends BlunoLibrary {
                 deleteData();
                 return true;
             case R.id.init_goal:
-                isGoalMode = true;
+                isGoalMode = !isGoalMode;
+                if(isGoalMode)
+                    item.setTitle("Cancel goal mode");
+                else
+                    item.setTitle("Set goal mode");
 //                initializeGoal();
                 return true;
             default:

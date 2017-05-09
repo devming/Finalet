@@ -193,19 +193,19 @@ public class MainFragment extends Fragment {
             MainActivity.setLocationRunning(false);
             stopServiceGPS();
             stopServiceTimer();
-
-            if(CustomPreferenceManager.isAlreadyRun(getContext())) {// 첫 실행 판단 - true이면 이전에 한번 수행한 적 있는것임.
-                updateData();
-            }
-            else {
+//TODO:
+            if(MainActivity.getIsGoalMode()) {// 첫 실행 판단 - Goal setting mode 일경우
                 setInitialData();
+            }
+            else {  // 평소 모드일 경우
+                updateData();
             }
         } else {    // 아직 시작하지 않은 상태(Start를 누를 경우)
             // GPS 서비스 실행
 
-            if(!CustomPreferenceManager.isAlreadyRun(getContext())) {      // 저장된 값이 false : 처음 실행해서 start를 처음 누름
-                CustomPreferenceManager.setIsAlreadyRun(getContext(), true);    // 목표치 설정됨.
-            }
+//            if(!CustomPreferenceManager.isAlreadyRun(getContext())) {      // 저장된 값이 false : 처음 실행해서 start를 처음 누름
+//                CustomPreferenceManager.setIsAlreadyRun(getContext(), true);    // 목표치 설정됨.
+//            }
             buttonRunning.setImageResource(R.drawable.btn_stop);
             MainActivity.setLocationRunning(true);
             startServiceGPS();
@@ -238,7 +238,7 @@ public class MainFragment extends Fragment {
         for(int i=0;i<count;i++) {  // i == n (x)
 
             MainActivity.GetRealmObject().beginTransaction();
-            UserVO user = MainActivity.GetRealmObject().createObject(UserVO.class, MainModel.INITIAL_VALUE);
+            UserVO user = MainActivity.GetRealmObject().createObject(UserVO.class, MainModel.INITIAL_VALUE + i);
 
             user.setDate(new SimpleDateFormat("yyyy-MM-dd EEE", Locale.ENGLISH).format(Calendar.getInstance().getTime()));
             user.setDistance(ServiceGPS.getDistance());
@@ -248,6 +248,8 @@ public class MainFragment extends Fragment {
 
             MainActivity.GetRealmObject().commitTransaction();
         }
+
+        CustomPreferenceManager.setDayCount(getContext(), (int)count);
     }
 
     private void updateData() {
