@@ -43,6 +43,8 @@ public class MainFragment extends Fragment {
     public static OnTextEventListener OnTextEventListenerObject;
 //    private Intent gpsServiceIntent = null;
 
+    private final int MAX_MINUTE_CONSTANT = 50;
+    private final int GRADIENT_DECENT_CONSTANT = 6;
 
     /**
      * Widget variables
@@ -196,7 +198,7 @@ public class MainFragment extends Fragment {
             stopServiceTimer();
 
             if(MainActivity.getIsGoalMode()) {// 첫 실행 판단 - Goal setting mode 일경우
-                setInitialData();
+                initializeGoalData();
             }
             else {  // 평소 모드일 경우
                 updateData();
@@ -216,41 +218,45 @@ public class MainFragment extends Fragment {
         buttonRunning.startAnimation(anim);
     }
 
-    private void setInitialData() {
-        double percentage = Double.parseDouble(ServiceTimer.getPercentage());    //p
-        double count = 36; // max n
+    private void initializeGoalData() {
+        double percentage = Double.parseDouble(ServiceTimer.getPercentage());    // value p
+        double w0 = (double)ServiceTimer.getTimerCount() / 60;
+        double valueN = 36; // value n .. 36 is maximum n
 
-
-        if(percentage >= 0 && percentage <= 10 ) {
-
-        } else if(percentage > 10 && percentage <= 20 ) {
-            count -= 6;
-        } else if(percentage > 20 && percentage <= 30 ) {
-            count -= 12;
-        } else if(percentage > 30 && percentage <= 40 ) {
-            count -= 18;
-        } else if(percentage > 40 && percentage <= 50 ) {
-            count -= 24;
-        } else {
-            count -= 36;
+        // adjust value n
+        if(w0 > 10 && w0 <= 20 ) {
+            valueN -= GRADIENT_DECENT_CONSTANT;
+        } else if(w0 > 20 && w0 <= 30 ) {
+            valueN -= GRADIENT_DECENT_CONSTANT*2;
+        } else if(w0 > 30 && w0 <= 40 ) {
+            valueN -= GRADIENT_DECENT_CONSTANT*3;
+        } else if(w0 > 40 && w0 <= 50 ) {
+            valueN -= GRADIENT_DECENT_CONSTANT*4;
+        } else {    // if user's running time is over the 50 minutes, value A.
+            valueN -= GRADIENT_DECENT_CONSTANT*6;
         }
-        double a = (50-percentage)/Math.pow(count, 2);
 
-        for(int i=0;i<count;i++) {  // i == n (x)
+        if(valueN == 0)
+            valueN = MAX_MINUTE_CONSTANT;
+
+        // get A
+        double valueA = (MAX_MINUTE_CONSTANT-w0)/Math.pow(valueN, 2);        // calculate value "a" by using value "n"
+
+        for(int i = 0; i< valueN; i++) {  // i == n (x)
 
             Realm.getInstance(MainActivity.Config).beginTransaction();
             UserVO user = Realm.getInstance(MainActivity.Config).createObject(UserVO.class, MainModel.INITIAL_VALUE + i);
 
             user.setDate(new SimpleDateFormat("yyyy-MM-dd EEE", Locale.ENGLISH).format(Calendar.getInstance().getTime()));
             user.setDistance(ServiceGPS.getDistance());
-            user.setPercentage(a * Math.pow((double)i, 2) + percentage);
+            user.setPercentage(percentage);
             user.setSpeed(ServiceGPS.getSpeed());
-            user.setTimeSeconds(ServiceTimer.getTimerCount());
+            user.setTimeSeconds((int)(valueA * Math.pow((double)i, 2) + w0));   // object value
 
             Realm.getInstance(MainActivity.Config).commitTransaction();
         }
 
-        CustomPreferenceManager.setDayCount(getContext(), (int)count);
+        CustomPreferenceManager.setDayCount(getContext(), (int) valueN);
     }
 
     private void updateData() {

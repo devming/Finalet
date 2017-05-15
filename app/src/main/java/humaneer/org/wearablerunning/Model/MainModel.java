@@ -60,22 +60,16 @@ public class MainModel {
         return Realm.getInstance(MainActivity.Config).where(UserVO.class).between("_id", INITIAL_VALUE, 10000).findAll();
     }
 
-    private void setDataGoal() {
 
-        // X축 라벨 추가
-//       labels = new ArrayList<String>();
-//       for (int i=0;i<userInfo.size();i++)  // 0:  시작점
-//            labels.add(i+"");
+    private void setDataGoal() {
 
         List<Entry> entries = new ArrayList<Entry>();
         int idx = 0;
         for(UserVO data : getTartget()) {
-            entries.add(new Entry(idx++, (float)data.getPercentage()));
+            entries.add(new Entry(idx++, (float)data.getPercentage())); // add values
         }
-//        RealmLineDataSet<UserVO> set = new RealmLineDataSet<UserVO>(userInfo, "xValue", "yValue");
         dataSetGoal = new LineDataSet(entries, "Goal");
         dataSetGoal.setMode(LineDataSet.Mode.LINEAR);
-//        dataSetGoal.setLabel("Goal");
         dataSetGoal.setDrawValues(false);
 
         dataSetGoal.setDrawCircleHole(false);
@@ -96,7 +90,6 @@ public class MainModel {
 
         dataSetCurrent = new LineDataSet(entries, "Current");
         dataSetCurrent.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
-//        dataSetGoal.setLabel("Goal");
         dataSetCurrent.setDrawValues(false);
 
         dataSetCurrent.setDrawCircleHole(false);
@@ -106,7 +99,6 @@ public class MainModel {
         dataSetCurrent.setCircleRadius(1.5f);
         dataSets.add(dataSetCurrent);
     }
-
 
 
     public LineDataSet getDataSetGoal() {
